@@ -18,13 +18,9 @@ public class WelcomeServlet extends BaseServlet{
         String path = request.getContextPath();
         request.setAttribute("path", path);
         forward(request, response, path, "welcome");
-        // request.getRequestDispatcher(path+"/WEB-INF/gpage/gt.ftl").forward(request,
-        // response);
-        // response.getWriter().write("Hello Servlet4.0");
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("======");
         this.doGet(request, response);
     }
 }

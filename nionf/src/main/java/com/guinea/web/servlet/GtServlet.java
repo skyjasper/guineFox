@@ -52,7 +52,7 @@ public class GtServlet extends BaseServlet {
         request.setAttribute("myDate", myDate);
         request.setAttribute("setData", setData);
         request.setAttribute("path", path);
-//		forward(request, response, path, "gt");
+        forward(request, response, path, "gt");
 
         /****
          * 页面跳转
@@ -64,7 +64,7 @@ public class GtServlet extends BaseServlet {
          System.out.println("request.getScheme()"+ request.getScheme());
          System.out.println("request.getServerName()"+request.getServerName());
          */
-        request.getRequestDispatcher(path + "/WEB-INF/gpage/gt.ftl").forward(request, response);
+//        request.getRequestDispatcher(path + "/WEB-INF/gpage/gt.ftl").forward(request, response);
         // response.getWriter().write("Hello Servlet4.0");
     }
 
