@@ -16,7 +16,7 @@
         <RollingFile name="RollingFile" fileName="${LOG_HOME}/nionf.log"
                      filePattern="${LOG_HOME}/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
             <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
-            <SizeBasedTriggeringPolicy size="3MB"/>
+            <SizeBasedTriggeringPolicy size="5MB"/>
         </RollingFile>
     </appenders>
     <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
