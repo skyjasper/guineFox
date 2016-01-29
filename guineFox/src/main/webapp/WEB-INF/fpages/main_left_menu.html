@@ -40,7 +40,7 @@
                      <li iconCls="icon-gears">
                         <a href="javascript:void(0)" class="e-link" onclick="openNav('/sys/editpwd','修改密码')">修改密码</a>
                     </li>
-                   <@shiro.hasPermission name="user">
+                 <@shiro.hasPermission name="user">
                     <li iconCls="icon-gears">
                         <a href="javascript:void(0)" class="e-link" onclick="openNav('sys/sysAccountList','查看用户')">查看用户</a>
                     </li>
@@ -59,7 +59,7 @@
                    <li iconCls="icon-gears">
                        <a class="e-link" href="javascript:void(0)" onclick="OpenTab('组织管理','/sys/organization/sysOrganizationList','')">组织管理</a>
                    </li>
-                  </@shiro.hasPermission>
+                </@shiro.hasPermission>
                     <li iconCls="icon-gears">
                         <a href="javascript:void(0)" class="e-link" onclick="OpenTab('报表展示pie','/reportList_pie','')">报表展示pie</a>
                     </li>
