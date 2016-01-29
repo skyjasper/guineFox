@@ -13,7 +13,7 @@
     <junit.version>4.12</junit.version>
     <servlet-api.version>4.0.0-b01</servlet-api.version>
     <mysql.version>5.1.38</mysql.version>
-    <joda-time.version>2.9.1</joda-time.version>
+    <joda-time.version>2.9.2</joda-time.version>
     <guava.version>19.0</guava.version>
     <pagehelper.version>4.1.1</pagehelper.version>
     <commons-lang3.version>3.4</commons-lang3.version>
