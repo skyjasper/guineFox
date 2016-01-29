@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by shiky on 2015/12/8.
  */
-@Service("systeminit")
+@Service("systemInit")
 public class SystemInit implements InitializingBean {
 
     @Autowired
