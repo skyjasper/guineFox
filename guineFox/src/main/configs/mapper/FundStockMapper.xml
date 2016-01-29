@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.FundStockMapper">
+    <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.FundStock">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="sCode" property="scode" jdbcType="VARCHAR"/>
+        <result column="sName" property="sname" jdbcType="VARCHAR"/>
+        <result column="sType" property="stype" jdbcType="SMALLINT"/>
+        <result column="sPace" property="space" jdbcType="SMALLINT"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from fund_stock
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.FundStock" useGeneratedKeys="true">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into fund_stock (sCode, sName, sType,
+        sPace)
+        values (#{scode,jdbcType=VARCHAR}, #{sname,jdbcType=VARCHAR}, #{stype,jdbcType=SMALLINT},
+        #{space,jdbcType=SMALLINT})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.FundStock">
+        update fund_stock
+        set sCode = #{scode,jdbcType=VARCHAR},
+        sName = #{sname,jdbcType=VARCHAR},
+        sType = #{stype,jdbcType=SMALLINT},
+        sPace = #{space,jdbcType=SMALLINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id, sCode, sName, sType, sPace
+        from fund_stock
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id, sCode, sName, sType, sPace
+        from fund_stock
+    </select>
+    <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select id, sCode, sName, sType, sPace
+    from fund_stock
+    where sCode = #{sCode}
+  </select>
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select id, sCode, sName, sType, sPace
+        from fund_stock
+        <where>
+            <if test="id !=null">
+                and `id` = #{id}
+            </if>
+            <if test="null!=stype and ''!=stype">
+                and `stype` = #{stype}
+            </if>
+            <if test="null!=space and ''!=space">
+                and `space` = #{space}
+            </if>
+            <if test="null!=scode and ''!=scode">
+                and `scode` LIKE CONCAT('%',#{scode},'%')
+            </if>
+            <if test="null!=sname and ''!=sname">
+                and `sname` LIKE CONCAT('%',#{sname},'%')
+            </if>
+        </where>
+   </select>
+</mapper>

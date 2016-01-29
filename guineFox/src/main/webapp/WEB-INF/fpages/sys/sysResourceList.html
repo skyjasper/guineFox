@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>资源管理</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/jasper.css">
+    <link rel="stylesheet" href="${path}/gui/ztree/base.css" type="text/css">
+    <link rel="stylesheet" href="${path}/gui/ztree/metroStyle.css" type="text/css">
+    <script type="text/javascript" src="${path}/gui/js/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="${path}/gui/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="${path}/gui/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="${path}/gui/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="${path}/gui/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <SCRIPT type="text/javascript">
+        <!--
+        var setting = {
+            view: {
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },data: {
+                simpleData: {enable: true}
+            },edit: {
+                enable: true
+            },callback: {
+                beforeEditName: beforeEditName,
+                beforeRemove: beforeRemove
+            }
+        };
+
+        var zNodes=${ztreeNodes},code,newCount= 1, d,treeNodet;
+
+        function beforeRemove(treeId, treeNode) {
+            processRemoveRes(treeNode);
+            return false;
+        }
+
+        function setCheck() {
+            var zTree = $.fn.zTree.getZTreeObj("sysResourceTree"),
+                    type ={ "Y" : "ps", "N" : "ps" };
+            zTree.setting.check.chkboxType = type;
+            showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+        }
+
+        function showCode(str) {
+            if (!code) code = $("#code");
+            code.empty();
+            code.append("<li>"+str+"</li>");
+        }
+
+        $(document).ready(function(){
+            $.fn.zTree.init($("#sysResourceTree"), setting, zNodes);
+            setCheck();
+        });
+
+        function processRemoveRes(treeNode){
+            $.messager.confirm('提示',"您确定要删除资源<font color='#8b0000'>"+treeNode.name+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/sys/sysResourceDelete',{id:treeNode.id},function(data){
+                        if (data.mta==1){
+                            var zTree = $.fn.zTree.getZTreeObj("sysResourceTree");
+                            zTree.removeNode(treeNode);
+                            $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                    },'json');
+                }
+            });
+        }
+
+        //处理编辑回掉函数
+        function processEditRes(data,d){
+            var obj_json = $.parseJSON(data);
+            if(obj_json.mta==1){
+                var zTree = $.fn.zTree.getZTreeObj("sysResourceTree"), msg_json=obj_json.msg;
+                treeNodet.name=msg_json.name;
+                zTree.updateNode(treeNodet);
+                if(d!=null){
+                    d.panel('close');
+                }
+                $.messager.alert('提示','编辑成功','info');
+            }else{
+                $.messager.alert('提示',obj_json.msg,'error');
+            }
+        }
+
+        //处理添加回掉函数
+        function processAddRes(data,d){
+            var obj_json = $.parseJSON(data);
+            if(obj_json.mta==1){
+                var zTree = $.fn.zTree.getZTreeObj("sysResourceTree"),
+                        msg_json=obj_json.msg;
+                zTree.addNodes(treeNodet,{id:msg_json.id, pId:msg_json.parentId, name:msg_json.name});
+                if(d!=null){
+                    d.panel('close');
+                }
+                $.messager.alert('提示','添加成功','info');
+            }else{
+                $.messager.alert('提示',obj_json.msg,'error');
+            }
+        }
+
+        //添加节点
+        function addHoverDom(treeId, treeNode) {
+            treeNodet=treeNode;
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0){
+                return;
+            }
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                    + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_"+treeNode.tId);
+            if (btn){
+                btn.bind("click", function(){
+                    addSysResourceProcess(treeNode.id);
+                    return false;
+                });
+            }
+        };
+
+        function beforeEditName(treeId, treeNode) {
+            editSysResourceProcess(treeNode.id);
+            return false;
+        }
+
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_"+treeNode.tId).unbind().remove();
+        }
+
+        //编辑节点处理
+        function editSysResourceProcess(id){
+            d=$("#dlg").dialog({
+                title: '编辑资源',
+                width: 380,
+                height: 390,
+                href:'${path}/sys/sysResourceEdit?id='+id,
+                maximizable:true,
+                modal:true,
+                buttons:[{text:'确认',
+                    handler:function(){
+                        submitResourceEditForm();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        d.panel('close');
+                    }
+                }]
+            });
+        }
+
+        //添加节点处理
+        function addSysResourceProcess(parentId){
+            d=$("#dlg").dialog({
+                title: '添加资源',
+                width: 380,
+                height: 390,
+                href:'${path}/sys/sysResourceAdd?parentId='+parentId,
+                maximizable:true,
+                modal:true,
+                buttons:[{text:'确认',
+                    handler:function(){
+                        submitResourceForm();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        d.panel('close');
+                    }
+                }]
+            });
+        }
+        //-->
+    </SCRIPT>
+</head>
+<body>
+    <div class="right">
+        <ul class="info">
+            <li class="title">
+                <h2>资源管理</h2>
+            </li>
+        </ul>
+    </div>
+    <div class="content_wrap">
+        <div class="zTreeBaseBackground left">
+            <ul id="sysResourceTree" class="ztree"></ul>
+        </div>
+    </div>
+    <div id="dlg"></div>
+</body>
+</html>

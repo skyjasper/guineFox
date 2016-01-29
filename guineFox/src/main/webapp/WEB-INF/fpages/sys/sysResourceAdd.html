@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>添加资源</title>
+</head>
+<body>
+<div id="v_sys_resource_add">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_sys_resource_add" class="easyui-form" action="${path}/sys/sysResourceAdd" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>名称:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="name" data-options="required:true" />
+                        <input type="text" name="parentId" id="parentId" value="${parentId}" style="display:none"/>
+                        <input type="text" name="available" id="available" value="0" style="display:none"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>类型:</td>
+                    <td>
+                        <select class="easyui-combobox" name="type" data-options="required:true">
+                            <#list resourceTypeEnumMap?keys as k>
+                                    <option value="${k}">--${resourceTypeEnumMap[k]}--</option>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>权限:</td>
+                    <td>
+                        <input class="easyui-textbox" name="permission" data-options="multiline:true"
+                               style="height:108px;width:198px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>URL:</td>
+                    <td>
+                        <input class="easyui-textbox" name="url" data-options="multiline:true"
+                               style="height:108px;width:198px"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<script>
+    function submitResourceForm(){
+        $('#ff_sys_resource_add').form('submit',{
+            onSubmit:function(){
+              return $(this).form('enableValidation').form('validate');
+            }, success : function(data) {
+                processAddRes(data,d);
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

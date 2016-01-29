@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>用户列表</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" title="用户列表" id="sysAccount_list1" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+                pagination:true,
+                  pageSize:'${pageSize}',
+            	  pageList:${pageList},
+                 url:'${path}/sys/sysAccountList',
+                 toolbar:'[id^=sysAccountTab]',
+                 rownumbers:true">
+    <thead>
+    <tr>
+        <th field="loginname" width="140">登录名</th>
+        <th field="kawyiname" width="140">昵称</th>
+        <th field="sexName" width="60">性别</th>
+        <th field="email" width="180">邮箱</th>
+        <th field="phonenumber" width="110">手机</th>
+        <th field="createip" width="132">注册IP</th>
+        <th field="createBro" width="120">注册浏览器</th>
+        <th field="careateSystem" width="120">注册系统</th>
+        <th field="createtime" formatter="todateTime"  width="160">注册时间</th>
+    </tr>
+    </thead>
+</table>
+    <!--
+<div id="sysAccountTab_1">
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="add()">添加</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" onclick="remove()">删除</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-locked'" onclick="lockedUser()">锁定</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-key'" onclick="keyUser()">解锁</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-pmwd'" onclick="replace()">重置密码</span>
+    <span class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'">导出</span>
+</div>
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+ -->
+<div id="sysAccountTab_2">
+            登录名 <input class="easyui-textbox" type="text" name="loginName" id="loginName"/>
+            昵称 <input class="easyui-textbox" type="text" name="kawyiName" id="kawyiName"/>
+            手机 <input class="easyui-textbox" type="text" name="phone" id="phone"/>
+            性别:
+    <select id="sex_" panelHeight="auto" style="width:100px" name="sex">
+        <option value="">--请选择--</option>
+        <#list sexEnumMap?keys as k>
+                <option value="${k}">--${sexEnumMap[k]}--</option>
+        </#list>
+    </select>
+</div>
+
+<div id="sysAccountTab_3">
+   注册浏览器 <input class="easyui-textbox" type="text" name="createBro" id="createBro"/>
+   注册系统 <input class="easyui-textbox" type="text" name="careateSystem" id="careateSystem"/>
+   注册时间  <input class="easyui-datebox" style="width:110px" name="createTime_s" id="createTime_s" />
+        - <input class="easyui-datebox" style="width:110px" name="createTime_e" id="createTime_e" />
+         <span class="easyui-linkbutton" iconCls="icon-search" id="sysAccount_list1_search">查询 </span>
+</div>
+
+
+<script type="text/javascript">
+    $(function(){
+        $("#sysAccount_list1_search").click(function(){
+            var sex=$("#sex_").find("option:selected").val();
+            var loginName = $("#loginName").val();
+            var kawyiName = $("#kawyiName").val();
+            var phoneNumber = $("#phone").val();
+            var createBro = $("#createBro").val();
+            var careateSystem = $("#careateSystem").val();
+            var createTime_s = $('#createTime_s').datebox('getValue');
+            var createTime_e = $('#createTime_e').datebox('getValue');
+            $("#sysAccount_list1").datagrid('load',{
+                loginName : loginName,
+                careateSystem : careateSystem,
+                createBro : createBro,
+                phoneNumber : phoneNumber,
+                sex : sex,
+                kawyiName : kawyiName,
+                createTime_s : createTime_s,
+                createTime_e : createTime_e
+            })
+        });
+    });
+    
+    
+/***
+ * 重置密码
+ */
+function replace(){
+	 var row = $('#sysAccount_list1').datagrid('getSelected');
+     if(row){
+         $.messager.confirm('提示','您确定要重置用户'+row.loginname+"的密码为888888吗？",function(r){
+             if(r){
+                 $.post('${path}/sys/sysaccountReplace',{id:row.id},function(data){
+                     if (data.mta==1){
+                         $('#sysAccount_list1').datagrid('reload');
+                          $.messager.alert('提示',data.msg,'info');
+                     }else{
+                         $.messager.alert('提示',data.msg,'error');
+                     }
+                     $('#sysAccount_list1').datagrid('reload');
+                 },'json');
+             }
+         });
+     }else{
+         $.messager.alert('提示','请选择一条记录!','warning');
+     }
+}
+</script>
+</body>
+</html>

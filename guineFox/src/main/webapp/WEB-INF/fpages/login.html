@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//Dtd HTML 4.0 transitional//EN">
+<html>
+<head>
+<title>登录</title>
+  <meta http-equiv=Content-Type content="text/html; charset=utf-8" />
+  <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="${path}/gui/css/login_style.css" />
+  <link rel="stylesheet" type="text/css" href="${path}/gui/themes/metro/easyui.css">
+  <link rel="stylesheet" type="text/css" href="${path}/gui/themes/icon.css">
+  <script type="text/javascript" src="${path}/gui/js/jquery-2.2.0.min.js"></script>
+  <script type="text/javascript" src="${path}/gui/js/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="${path}/gui/js/login/login_c3.js"></script>
+</head>
+<body>
+<div class="login_frame"></div>
+
+<div class="LoginWindow">
+  <div>
+    <form method="post" action="javascript();" class="login">
+
+      <p>
+        <label>用户名:</label>
+        <input type="text" name="username" class="username">
+      </p>
+
+      <p>
+        <label>密&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
+        <input type="password" name="password" class="password">
+      </p>
+      <p>
+        <label>验证码:</label>
+        <input type="text" name="txtSN" class="txtSN" style="width:90px;height:26px;">
+        &nbsp; <img id="valic" style="width:90px;height:26px;" src="${path}/guinea/verify" />
+      </p>
+
+      <p class="login-submit">
+        <button type="button" class="login-button">登录</button>
+      </p>
+
+    </form>
+    <p class="registration">
+      <a href="${path}/sys/register?japerd=2332">注册</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

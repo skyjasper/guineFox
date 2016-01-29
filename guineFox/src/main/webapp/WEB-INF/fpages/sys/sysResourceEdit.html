@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>编辑资源</title>
+</head>
+<body>
+<div id="v_sys_resource_edit">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_sys_resource_edit" class="easyui-form" action="${path}/sys/sysResourceEdit" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>名称:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="name" data-options="required:true" value="${sysResource.name}" />
+                        <input type="text" name="parentId" id="parentId" value="${sysResource.parentId}" style="display:none"/>
+                        <input type="text" name="available" id="available" value="${sysResource.available}" style="display:none"/>
+                        <input type="text" name="id" id="id" value="${sysResource.id}" style="display:none"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>类型:</td>
+                    <td>
+                        <select class="easyui-combobox" name="type" data-options="required:true">
+                            <#list resourceTypeEnumMap?keys as k>
+                                <#if k == "${sysResource.type}">
+                                   <option value="${k}" selected="selected">--${resourceTypeEnumMap[k]}--</option>
+                                </#if>
+                                <#if k != "${sysResource.type}">
+                                    <option value="${k}">--${resourceTypeEnumMap[k]}--</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>权限:</td>
+                    <td>
+                        <input class="easyui-textbox" name="permission" value="${sysResource.permission!}" data-options="multiline:true"
+                               style="height:108px;width:198px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>URL:</td>
+                    <td>
+                        <input class="easyui-textbox" name="url" data-options="multiline:true" value="${sysResource.url!}"
+                               style="height:108px;width:198px"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<script>
+    function submitResourceEditForm(){
+        $('#ff_sys_resource_edit').form('submit',{
+            onSubmit:function(){
+              return $(this).form('enableValidation').form('validate');
+            }, success : function(data) {
+                processEditRes(data,d);
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

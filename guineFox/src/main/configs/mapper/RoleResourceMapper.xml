@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.RoleResourceMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.RoleResource" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="BIGINT" />
+    <result column="resource_id" property="resourceId" jdbcType="BIGINT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from role_resource
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByRoleId" parameterType="java.lang.Long" >
+    delete from role_resource
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByResourceId" parameterType="java.lang.Long" >
+    delete from role_resource
+    where resource_id = #{resourceId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.RoleResource" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into role_resource (role_id, resource_id)
+    values (#{roleId,jdbcType=BIGINT}, #{resourceId,jdbcType=BIGINT})
+  </insert>
+  <insert id="bathInsert" parameterType="java.util.List" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into role_resource (role_id, resource_id)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >
+      (#{item.roleId,jdbcType=BIGINT},#{item.resourceId,jdbcType=BIGINT})
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.RoleResource" >
+    update role_resource
+    set role_id = #{roleId,jdbcType=BIGINT},
+      resource_id = #{resourceId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, role_id, resource_id
+    from role_resource
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByResourceId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, role_id, resource_id
+    from role_resource
+    where resource_id = #{resource_id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, role_id, resource_id
+    from role_resource
+    where role_id = #{role_id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, role_id, resource_id
+    from role_resource
+  </select>
+</mapper>

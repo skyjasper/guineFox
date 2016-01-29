@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.UserOrganizationMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.UserOrganization" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="org_id" property="orgId" jdbcType="BIGINT" />
+  </resultMap>
+  <resultMap id="UserOrgResultMap" type="com.guinea.datadb.mysql.model.UserOrganizationView" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="org_id" property="orgId" jdbcType="BIGINT" />
+    <result column="kawyiname" property="kawyiname" jdbcType="VARCHAR" />
+    <result column="loginname" property="loginname" jdbcType="VARCHAR" />
+    <result column="orgName" property="orgName" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from user_organization
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByUserId" parameterType="java.lang.Long" >
+    delete from user_organization
+    where user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByOrgId" parameterType="java.lang.Long" >
+    delete from user_organization
+    where org_id = #{orgId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.UserOrganization" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into user_organization (user_id, org_id)
+    values (#{userId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.UserOrganization" >
+    update user_organization
+    set user_id = #{userId,jdbcType=BIGINT},
+      org_id = #{orgId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, user_id, org_id
+    from user_organization
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, user_id, org_id
+    from user_organization
+    where user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByOrgId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, user_id, org_id
+    from user_organization
+    where org_id = #{orgId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, user_id, org_id
+    from user_organization
+  </select>
+  <select id="selectUserOrgIdAll" resultMap="UserOrgResultMap">
+    SELECT uorg.id,uorg.org_id,uorg.user_id,acc.kawyiname FROM sys_account acc INNER JOIN user_organization uorg ON acc.id = uorg.user_id
+  </select>
+</mapper>

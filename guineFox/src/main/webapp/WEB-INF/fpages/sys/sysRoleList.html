@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>用户列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" title="角色" id="sysRole_list" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+                 pagination:true,
+                 pageSize:'${pageSize}',
+            	 pageList:${pageList},
+                 url:'${path}/sys/sysRoleList',
+                 toolbar:'[id^=sysRoleTab]',
+                 rownumbers:true">
+    <thead>
+    <tr>
+        <th field="id" width="90">ID</th>
+        <th field="roleName" width="120">角色名</th>
+        <th field="description" width="180">描述</th>
+        <th field="availableName" width="120">可用状态</th>
+        <th data-options="field:'ressouceRange',width:120,align:'left',formatter:viewResourceRange">角色资源</th>
+        <th data-options="field:'userRange',width:120,align:'left',formatter:viewUserRange" width="120">角色用户</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="sysRoleTab_1">
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="addRole()">添加角色</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" onclick="editRole()">编辑</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add-g'" onclick="rangeRoleResource()">角色资源授权</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add-g'" onclick="rangeRoleUser()">角色用户授权</span>
+    <span class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" onclick="removeRole()">删除</span>
+    <span class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'">导出</span>
+</div>
+<div id="sysRoleTab_2">
+            角色名 <input type="text" class="easyui-textbox" name="roleName" id="roleName"/>
+            描述 <input type="text" class="easyui-textbox" name="description" id="description"/>
+            可用状态:
+        <select id="available" panelHeight="auto" style="width:100px" name="available">
+        <option value="">--请选择--</option>
+        <#list availableEnumMap?keys as k>
+                <option value="${k}">--${availableEnumMap[k]}--</option>
+        </#list>
+    </select>
+     <span class="easyui-linkbutton" iconCls="icon-search" id="sysRole_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#sysRole_list_search").click(function(){
+            var available=$("#available").find("option:selected").val();
+            var roleName = $("#roleName").val();
+            var description = $("#description").val();
+            var pname = $("#pname").val();
+            $("#sysRole_list").datagrid('load',{
+            	role_name : roleName,
+                description : description,
+                available:available
+            })
+        });
+    });
+
+    function rangeRoleUser(){
+        var row = $('#sysRole_list').datagrid('getSelected');
+        if(row){
+            openNav('${path}/sys/range/role_user_range?id='+row.id+'&flagt=range','角色用户授权');
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    }
+
+    function rangeRoleResource(){
+      var row = $('#sysRole_list').datagrid('getSelected');
+        if(row){
+            openNav('${path}/sys/range/role_resource_range?id='+row.id+'&flagt=range','角色资源授权');
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    }
+
+    function addRole(){
+        openNav('${path}/sys/sysRoleAdd','添加角色');
+    }
+
+    function editRole(){
+        var row = $('#sysRole_list').datagrid('getSelected');
+        if(row){
+            openNav('${path}/sys/sysRoleEdit?id='+row.id,'编辑角色');
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    }
+
+    function removeRole(){
+        var row = $('#sysRole_list').datagrid('getSelected');
+        if(row){
+            $.messager.confirm('提示',"您确定要删除角色<font color='#8b0000'>"+row.roleName+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/sys/sysRoleRemove',{id:row.id},function(data){
+                        if (data.mta==1){
+                                $('#sysRole_list').datagrid('reload');
+                                $.messager.alert('提示',data.msg,'info');
+                            }else{
+                                $.messager.alert('提示',data.msg,'error');
+                            }
+                           },'json');
+                        }
+                     });
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    }
+
+    function v_resource(id){
+        openNav('${path}/sys/range/role_resource_range?id='+id+"&flagt=view",'角色资源授权');
+    }
+
+    function v_user(id){
+        openNav('${path}/sys/range/role_user_range?id='+id+"&flagt=view",'角色用户授权');
+    }
+
+    function viewResourceRange(val,row){
+        var id=row.id;
+        return '<span onclick="v_resource('+id+')"><font color="#778899">查看</font></span>';
+    }
+
+    function viewUserRange(val,row){
+        var id=row.id;
+        return '<span onclick="v_user('+id+')"><font color="#778899">查看</font></span>';
+    }
+
+
+</script>
+</body>
+</html>

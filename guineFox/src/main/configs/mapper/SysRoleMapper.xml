@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.SysRoleMapper" >
+    <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.SysRole" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="available" property="available" jdbcType="SMALLINT" />
+    </resultMap>
+    <resultMap id="RoleRangeResultMap" type="com.guinea.datadb.mysql.model.RoleRangeView" >
+        <id column="uid" property="uid" jdbcType="BIGINT" />
+        <id column="rid" property="rid" jdbcType="BIGINT" />
+        <id column="resource_id" property="resourceid" jdbcType="BIGINT" />
+        <id column="locked" property="locked" jdbcType="SMALLINT" />
+        <id column="isdelete" property="isdelete" jdbcType="SMALLINT" />
+        <id column="roleAvailable" property="roleAvailable" jdbcType="SMALLINT" />
+        <id column="resAvailable" property="resAvailable" jdbcType="SMALLINT" />
+        <result column="loginname" property="loginname" jdbcType="VARCHAR" />
+        <result column="rolename" property="rolename" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="resname" property="resname" jdbcType="VARCHAR" />
+        <result column="permission" property="permission" jdbcType="VARCHAR" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        delete from sys_role
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.SysRole" useGeneratedKeys="true">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into sys_role (role_name, description, available
+        )
+        values (#{roleName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+        #{available,jdbcType=BIT}
+        )
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.SysRole" >
+        update sys_role
+        set role_name = #{roleName,jdbcType=VARCHAR},
+        description = #{description,jdbcType=VARCHAR},
+        available = #{available,jdbcType=BIT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select id, role_name, description, available
+        from sys_role
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap" >
+        select id, role_name, description, available
+        from sys_role
+    </select>
+    <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select id, role_name, description, available
+        from sys_role
+        <where>
+            <if test="id !=null">
+                and sys_role.`id` = #{id}
+            </if>
+            <if test="null!=available and ''!=available">
+                and sys_role.`available` = #{available}
+            </if>
+            <if test="null!=role_name and ''!=role_name">
+                and sys_role.`role_name` LIKE CONCAT('%',#{role_name},'%')
+            </if>
+            <if test="null!=description and ''!=description">
+                and sys_role.`description` LIKE CONCAT('%',#{description},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select id, role_name, description, available
+        from sys_role
+        where role_name = #{role_name,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByObj" parameterType="com.guinea.datadb.mysql.entity.SysRole" resultMap="BaseResultMap" >
+        select id, role_name, description, available,pid
+        from sys_role
+        <where>
+            <if test="id !=null">
+                and `id` = #{id}
+            </if>
+            <if test="null!=available and ''!=available">
+                and `available` = #{available}
+            </if>
+            <if test="null!=role_name and ''!=role_name">
+                and `role_name` LIKE CONCAT('%',#{role_name},'%')
+            </if>
+            <if test="null!=description and ''!=description">
+                and `description` LIKE CONCAT('%',#{description},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectByRoleRange" resultMap="RoleRangeResultMap" parameterType="java.lang.String">
+      SELECT ur.u_id AS uid,ur.r_id AS rid,acc.locked,acc.isDelete,acc.loginName,srole.role_name,
+        srole.available AS roleAvailable,srole.role_name AS roleName,rres.resource_id,sres.type,
+        sres.name AS resName,sres.permission,sres.available AS resAvailable
+        FROM `sys_account` acc INNER JOIN user_role ur ON acc.id = ur.u_id INNER JOIN sys_role srole
+        ON srole.id = ur.r_id INNER JOIN role_resource rres ON srole.id = rres.role_id
+        INNER JOIN sys_resource sres ON rres.resource_id = sres.id
+        WHERE sres.available =1 AND acc.locked =1 AND acc.isDelete=1 AND srole.available =1
+    </select>
+</mapper>

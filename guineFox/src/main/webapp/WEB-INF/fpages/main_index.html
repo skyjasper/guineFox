@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>skyjasper</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/jasper.css">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+    <script type="text/javascript" src="${path}/gui/js/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="${path}/gui/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="${path}/gui/js/tab.js"></script>
+    <script type="text/javascript" src="${path}/gui/js/jquery.json.js"></script>
+    <script type="text/javascript" src="${path}/gui/local/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="${path}/gui/js/tiguan.js"></script>
+    <script type="text/javascript" src="${path}/gui/report/fusioncharts.js"></script>
+    <script type="text/javascript" src="${path}/gui/report/fusioncharts.charts.js"></script>
+    <script type="text/javascript" src="${path}/gui/report/fusioncharts.theme.fint.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            /**start**/
+
+            /**end**/
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+<div data-options="region:'north',border:false" style="height:51px;background:#075071;padding:3px">
+    <div id="header-inner">
+        <table cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+                <td style="height:38px;width:28px;">
+                    <div class="skyjasper"></div>
+                </td>
+                <td style="height:39px;">
+                    <div style="color:#C8C3C0;font-size:23px;font-weight:bold;">
+                        <a href="www.baidu.com" style="color:#C8C3C0;font-size:23px;font-weight:bold;text-decoration:none">Jasper</a>
+                    </div>
+                    <div style="color:#FFF;font-size:10px">
+                        &nbsp;&nbsp;&nbsp;<font style="color:#FFF;text-decoration:none;font-size:10px" face="DFKai-SB" size="10">${kwyname}</font>
+                    </div>
+                </td>
+                <td style="padding-right:6px;text-align:right;vertical-align:bottom;">
+                    <span ><font color="#ffe4c4">您好,${kwyname}</font>&nbsp;&nbsp;&nbsp;</span>
+                    <a href="javascript:void(0);"  onclick="openNav('${path}/meInfo','个人信息')" style=" color:#BABABA; text-decoration:none">个人信息</a>
+                    <a href="${path}/exit" style=" color:#BABABA; text-decoration:none">退出</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- menu  start-->
+<div data-options="region:'west',split:true,title:'菜单'" style="width:166px;padding:10px;" href="main_left_menu"></div>
+<!-- menu  end-->
+
+<!-- main_menu  start-->
+<div region="center">
+    <div id="tt" class="easyui-tabs" fit="true" border="false" plain="true">
+        <div title="welcome" href="${path}/main_menu"  />
+    </div>
+</div>
+<!-- main_menu  start-->
+
+<!-- mouse right start-->
+<div id="jmm" class="easyui-menu" style="width:88px;">
+    <div id="m-refresh" data-options="iconCls:'icon-reload'">刷新</div>
+    <div class="menu-sep"></div>
+    <div id="m-closeall" data-options="iconCls:'icon-closeall'">全部关闭</div>
+    <div id="m-closeother" data-options="iconCls:'icon-otherclose'">关闭其他</div>
+    <div class="menu-sep"></div>
+    <div id="m-close" data-options="iconCls:'icon-currclose'" >关闭</div>
+</div>
+<!-- mouse right end-->
+<script type="text/javascript">
+    $(function(){
+        //console.info("--------------------");
+        //$("#li_mu_wy").empty();
+    });
+
+
+</script>
+</body>
+</html>
