@@ -85,7 +85,7 @@ public class ValidateCode implements Serializable {
         g.dispose();
         try {
             ImageIO.setUseCache(true);
-            ImageIO.setCacheDirectory(CommonToolsUtil.checkFileDir(FileContents.CATCHPATH));
+            ImageIO.setCacheDirectory(CommonToolsUtil.ncheckFileDir(FileContents.CATCHPATH));
             ImageIO.write(image, "JPEG", response.getOutputStream());// 将内存中的图片通过流动形式输出到客户端
         } catch (Exception e) {
             e.printStackTrace();

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 //@WebServlet(name="pingYingServlet",urlPatterns="/interface/changeToPinYin",loadOnStartup = -3)
 public class PingYingServlet extends HttpServlet {
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 7339441236095612288L;
 

@@ -107,6 +107,7 @@
 				/guinea/verify = anon
 				/gui/** = anon
 				/interface/** = anon
+				/uploadify/** = anon
 				/** = authc,forceLogout
 			</value>
 		</property>

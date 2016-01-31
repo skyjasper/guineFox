@@ -18,7 +18,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class SpringConfigServlet extends DispatcherServlet {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 8450091646716922795L;
 }
