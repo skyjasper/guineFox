@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>添加</title>
+</head>
+<body>
+<div id="v_ff_card_transactrate_bath_add" class="easyui-panel" title="批量交易" style="width:94%;hight:80%">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_card_transactrate_bath_add" class="easyui-form"
+              action="${path}/fund/card/card_transactrate_info_bath_add" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>商户:</td>
+                    <td>
+                        <select class="easyui-combobox" id="merchant_id_s2" style="width:298px" name="merchantId">
+                            <#list cardMerchantMap?keys as k>
+                                <#if k == "${cardMerchant.code}">
+                                    <option value="${k}" selected="selected">${k} --${cardMerchantMap[k]}</option>
+                                </#if>
+                                <#if k != "${cardMerchant.code}">
+                                    <option value="${k}">${k} --${cardMerchantMap[k]}</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>费率:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="rate" disabled="true" id="rate_s2"
+                               style="width:298px;" value="${cardMerchant.rate}"/>
+                        <font color="red">(%)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>详细交易 <br/> <font color="#00bfff">(每笔交易用;号隔开)</font>：</td>
+                    <td>
+                        <input class="easyui-textbox" name="transactrate_info" size="60" data-options="multiline:true"
+                               style="height:100px;width:298px" id="transactrate_info_" required="true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>交易时间:</td>
+                    <td>
+                        <input name="transactrateTime" id="transactrateTime_2" size="60" required="true" class="easyui-datetimebox"
+                               style="width:298px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>说明:<font color="#b22222"></font></td>
+                    <td>
+                        <input class="easyui-textbox" name="ps" style="width:298px;height:30px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>交易笔数:</td>
+                    <td>
+                        <input class="easyui-numberbox" type="text" name="card_count" disabled="true" id="card_count_"
+                               style="width:298px;" data-options="required:true,precision:6"/>
+                        <input style="display:none" type="text" name="transactrate_count" id="transactrate_count_n_"/>
+                        <font color="red">(笔)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>总交易金额:</td>
+                    <td>
+                        <input class="easyui-numberbox" type="text" name="card_total" disabled="true" id="card_total_n_"
+                               style="width:298px;" data-options="required:true,precision:6"/>
+                        <input style="display:none" type="text" name="transactrate_total" id="transactrate_total_n_"/>
+                        <font color="red">(￥)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>预期结算金额:</td>
+                    <td>
+                        <input class="easyui-numberbox" type="text" name="cashPayment_n_" disabled="true"
+                               id="cashPayment_2"
+                               style="width:298px;" data-options="required:true,precision:6"/>
+                        <input style="display:none" type="text" name="cashPayment" id="cashPayment_n_2"/>
+                        <font color="red">(￥)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>预期结算时间:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="cashTime_n" disabled="true" id="cashTime_2"
+                               style="width:298px;" data-options="required:true,precision:6"/>
+                        <input style="display:none" type="text" name="cashTime" id="cashTime_n_2"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><font color="#4b0082">消息:</font></td>
+                    <td>
+                        <div id="tipmsg_fund2" class="easyui-draggable easyui-resizable" data-options="handle:'#mytitle'"
+                             style="width:298px;height:158px;border:1px solid #ccc">
+                            <div id="mytitle" style="background:#add8e6;padding:3px;">提示信息</div>
+                            <div style="padding:10px" id="f_result2">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="text-align:right;padding:10px;padding-bottom: 10px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-submit" style="width:90px"
+           onclick="submitForm2()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c2" iconCls="icon-submit" style="width:90px"
+           onclick="matchForm2()">计算</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c8" iconCls="icon-otherclose" style="width:90px"
+           onclick="clearForm2()">清空</a>
+    </div>
+</div>
+<script>
+    /**
+     * 级联费率
+     */
+    $(function () {
+        $("#merchant_id_s2").combobox({
+            onChange: function () {
+                var merchant_id = $('#merchant_id_s2').combobox('getValue');
+                $.post("${path}/fund/card/card_transactrate_info_cascade",
+                        {merchant_id: merchant_id},
+                        function (data) {
+                            var obj_json = $.parseJSON(data);
+                            if (obj_json.mta == 1) {
+                                var value_json = $.parseJSON(obj_json.msg);
+                                $("#rate_s2").textbox("setValue", value_json.rate);
+                            }
+                        });
+            }
+        });
+    })
+
+    /***
+     * 提交
+     */
+    function submitForm2() {
+        $('#ff_card_transactrate_bath_add').form('submit', {
+            onSubmit: function () {
+                return $(this).form('enableValidation').form('validate');
+            },
+            success: function (data) {
+                var obj_json = $.parseJSON(data);
+                if (obj_json.mta == 1) {
+                    $.messager.alert('提示', obj_json.msg, 'info');
+                    var currTab = $('#tt').tabs('getSelected');
+                    var currIndex = currTab.panel('options').index;
+                    $('#card_transactrate_info_list').datagrid('reload');
+                    $('#tt').tabs('close', currIndex);
+                } else {
+                    $.messager.alert('提示', obj_json.msg, 'error');
+                }
+            }
+        });
+    }
+
+    /**
+     * 计算
+     */
+    function matchForm2() {
+        var transactrate_info = $("#transactrate_info_").textbox("getValue");
+        var transactrateTime = $("#transactrateTime_2").datetimebox("getValue");
+        var merchantId = $('#merchant_id_s2').combobox('getValue');
+        $.post("${path}/fund/card/card_transactrate_info_bath_match",
+                {
+                    transactrate_info: transactrate_info,
+                    transactrateTime, transactrateTime,
+                    merchantId, merchantId,
+                },
+                function (data) {
+                    var obj_json = $.parseJSON(data);
+                    var r_msg = $.parseJSON(obj_json.msg);
+                    var message =r_msg.message;
+                    var transactrateTimePay= r_msg.transactrateTimePay;
+                    var cash_payment= r_msg.cashPayment;
+                    var totalTransactrateMoney= r_msg.totalTransactrateMoney;
+                    var transactrate_count= r_msg.count;
+                    $("#f_result2").html(message);
+                    $("#cashTime_2").textbox('setValue', transactrateTimePay);
+                    $("#cashPayment_2").textbox('setValue', cash_payment);
+                    $("#card_total_n_").textbox('setValue', totalTransactrateMoney);
+                    $("#card_count_").textbox('setValue', transactrate_count);
+                    $("#cashPayment_n_2").val(cash_payment);
+                    $("#cashTime_n_2").val(transactrateTimePay);
+                    $("#transactrate_total_n_").val(totalTransactrateMoney);
+                    $("#transactrate_count_n_").val(transactrate_count);
+                });
+    }
+
+    function clearForm2() {
+        $('#ff_card_transactrate_bath_add').form('clear');
+    }
+</script>
+</body>
+</html>

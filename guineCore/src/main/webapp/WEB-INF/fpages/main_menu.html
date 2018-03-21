@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <ul class="easyui-tree">
+                <li iconCls="icon-base">
+                    <span>fund</span>
+                    <ul>
+                        <li iconCls="icon-gears"><a href="https://www.baidu.com/" target="_blank" class="e-link">百度</a>
+                        </li>
+                        <li iconCls="icon-gears"><a href="http://fund.eastmoney.com/" target="_blank"
+                                                    class="e-link">天天</a></li>
+                        <li iconCls="icon-gears"><a href="https://user.95516.com/pages/login/index.html" target="_blank"
+                                                    class="e-link">银联</a></li>
+                        <li iconCls="icon-gears"><a href="http://www.howbuy.com/" target="_blank" class="e-link">好买</a>
+                        </li>
+                        <li iconCls="icon-gears"><a href="http://www.10jqka.com.cn" target="_blank"
+                                                    class="e-link">同花顺</a></li>
+                        <li iconCls="icon-gears"><a href="http://www.hexun.com" target="_blank" class="e-link">和讯</a>
+                        </li>
+                        <li iconCls="icon-gears"><a href="http://finance.sina.com.cn/stock/index.shtml" target="_blank"
+                                                    class="e-link">新浪</a></li>
+                        <li iconCls="icon-gears"><a href="http://blog.10jqka.com.cn/182536755/" target="_blank"
+                                                    class="e-link">宽播客</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <ul class="easyui-tree">
+                <li iconCls="icon-base">
+                    <span>FUND</span>
+                    <ul>
+                        <li iconCls="icon-gears"><a href="http://www.wzdai.com" target="_blank" class="e-link">wen</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <ul class="easyui-tree">
+                <li iconCls="icon-base">
+                    <span>jasperZoo</span>
+                    <ul>
+                        <li iconCls="icon-gears"><a href="http://www.oschina.net" target="_blank"
+                                                    class="e-link">oschina</a></li>
+                        <li iconCls="icon-gears"><a href="http://www.csdn.net/" target="_blank" class="e-link">csdn</a>
+                        </li>
+                        <li iconCls="icon-gears"><a href="http://www.iteye.com/" target="_blank"
+                                                    class="e-link">iteye</a></li>
+                        <li iconCls="icon-gears"><a href="http://developer.51cto.com/java/" target="_blank"
+                                                    class="e-link">51cto</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'wireless'"
+               id="wireless">
+                <font color="#126499" id="wsState">连接关闭</font></a>
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    var interval; //调度器对象。
+    var socket;
+    var wsurl = "${web_socket_url}";
+    var user_id = "${user_id}";
+
+    /***
+     * websocket
+     */
+    if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
+    }
+    if (window.WebSocket) {
+        socket = new WebSocket(wsurl);
+        socket.onopen = function (event) {
+            $("#wsState").html("连接开启");
+        };
+        socket.onmessage = function (event) {
+            var server_data = event.data;
+            if (null != server_data && server_data.length > 0) {
+                var even_data_json = $.parseJSON(server_data);
+                var type = even_data_json.type;
+                var content = even_data_json.content;
+                var title = even_data_json.title;
+                var time = even_data_json.time;
+                var duserid= even_data_json.userId;
+                //推送通过用户
+                if(duserid==user_id){
+                    styleTaskMessage(title+" : "+title+content+",<br/>任务时间："+time,type);
+                    //                despTaskMessage(title,content);
+                    //                if(type==3||type==2){
+                    //                    despTaskMessage(title,content);
+                    //                }
+                }
+            }
+        };
+        socket.onclose = function (event) {
+            $("#wsState").html("连接关闭");
+        };
+    } else {
+        console.info("你的浏览器不支持 WebSocket！");
+    }
+
+    $(function () {
+        //start
+
+        //end
+    });
+
+    function send(message) {
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState == WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            console.info("连接没有开启.");
+        }
+    }
+
+    function styleTaskMessage(content,mtype) {
+        var type ="error";
+        if(mtype==0){
+            type="notice";
+        }else if(mtype==1){
+            type="warning";
+        }
+        $().toastmessage('showToast', {
+            text: content,
+            sticky: false,
+            position: 'top-right',
+            type: type,
+            stayTime: 36000,
+            inEffectDuration: 600,
+            close: function () {}
+        });
+    }
+
+    function despTaskMessage(title,content){
+        var title = title;
+        var options = {
+            body: content,
+            icon: "${path}/gui/taskMessage/images/admin.png"
+        };
+        // 如果是IE的处理方式
+        if (!("Notification" in window)) {
+            //alert("波波桑起床了");
+        }else if (Notification.permission === "granted") {//非ie 的情况
+            // If it's okay let's create a notification
+            var notification = new Notification(title, options);
+            notification.onshow = function() {
+                setTimeout(function() {
+                    notification.close();
+                }, 30000);
+            };
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                // If the user accepts, let's create a notification
+                if (permission === "granted") {
+                    var notification = new Notification(title, options);
+                    notification.onshow = function() {
+                        setTimeout(function() {
+                            notification.close();
+                        }, 30000);
+                    };
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

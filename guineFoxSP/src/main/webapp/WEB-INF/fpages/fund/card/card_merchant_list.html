@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>商户配置</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="card_merchant_list" title="商户配置" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/fund/card/card_merchant_list',
+              toolbar:'[id^=card_merchantTab]'">
+    <thead>
+    <tr>
+        <th field="operator_name" width="180">运营商</th>
+        <th field="code" width="180">代码</th>
+        <th field="name" width="220">名称</th>
+        <th field="rate" width="100">费率</th>
+    </tr>
+    </thead>
+</table>
+<div id="card_merchantTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" id="card_merchant_add">添加</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" id="card_merchant_edit">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="card_merchant_remove">删除</a>
+</div>
+<div id="card_merchantTab_2">
+    运营商:
+    <select id="operatorId_s" panelHeight="auto" style="width:100px" name="operatorId">
+        <option value="">--请选择--</option>
+        <#list cardOperatorMap?keys as k>
+            <option value="${k}">--${cardOperatorMap[k]}--</option>
+        </#list>
+    </select>
+    代码 :<input id="code_s" type="text" name="code"/>
+    名称 :<input id="name_s" type="text" name="name"/>
+    <span class="easyui-linkbutton" iconCls="icon-search" id="card_merchant_list_search">查询</span>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    $("#card_merchant_add").click(function(){
+        openNav('${path}/card_merchant_add','添加商户');
+    });
+
+    $("#card_merchant_edit").click(function(){
+        var row = $('#card_merchant_list').datagrid('getSelected');
+        if(row){
+            openNav('${path}/card_merchant_edit?code='+row.code,'编辑商户');
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#card_merchant_remove").click(function(){
+        var row = $('#card_merchant_list').datagrid('getSelected');
+        if(row){
+            $.messager.confirm('提示',"您确定要删除商户<font color='#8b0000'>"+row.name+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/fund/card/card_merchant_delete',{code:row.code},function(data){
+                        if (data.mta==1){
+                            $('#card_merchant_list').datagrid('reload');
+                             $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                    },'json');
+                }
+            });
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#card_merchant_list_search").click(function(){
+        var code_s = $("#code_s").val();
+        var name_s = $("#name_s").val();
+        var operatorId_s=$("#operatorId_s").find("option:selected").val();
+        $("#card_merchant_list").datagrid('load',{
+            code:code_s,
+            name:name_s,
+            operatorId:operatorId_s
+        })
+    });
+});
+</script>
+</body>
+</html>

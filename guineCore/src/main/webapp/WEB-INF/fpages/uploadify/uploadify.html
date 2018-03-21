@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body style="font: 13px Verdana; background: #eee; color: #333">
+<form method="post" action="#">
+    <div id="uploader">
+        <p></p>
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(function() {
+        $("#uploader").pluploadQueue({
+            runtimes : 'html5,flash,silverlight,html4',
+            url : '${path}/uploadify/upload',
+            chunk_size: '${chunk_size}',
+            rename : false,
+            dragdrop: true,
+            filters : {
+                max_file_size : '${max_file_size}',
+                ${mime_type_str}
+            },
+            resize : {width : 320, height : 240, quality : 90},
+            flash_swf_url : '${path}/gui/plupload/Moxie.swf',
+            silverlight_xap_url : '${path}/gui/plupload/Moxie.xap'
+        });
+    });
+</script>
+
+</body>
+</html>

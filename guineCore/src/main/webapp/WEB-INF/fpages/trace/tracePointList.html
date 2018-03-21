@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>位置点</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="tracePoint_list" title="位置点配置" iconCls="icon-point" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/trace/tracePointList',
+              toolbar:'[id^=tracePointTab]',
+              rownumbers:true">
+    <thead>
+    <tr>
+        <th field="id" width="70">代码</th>
+        <th field="pname" width="130">名称</th>
+        <th field="address" width="500">地址</th>
+        <th field="lgt" width="110">精度</th>
+        <th field="lat" width="110">纬度</th>
+        <th field="scope" width="130">范围(米)</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="tracePointTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" id="tracePointAdd">添加</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" id="tracePointEdit">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="tracePointRemove">删除</a>
+    <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'" onclick="">导出</a>
+</div>
+<div id="tracePointTab_2">
+    名称 :<input id="pname_s" type="text" name="pname"/>
+    地址 :<input id="address_s" type="text" name="address"/>
+    <span class="easyui-linkbutton" iconCls="icon-search" id="tracePoint_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#tracePointAdd").click(function(){
+            OpenTab('添加位置点','${path}/trace/tracePointAdd','');
+        });
+
+        $("#tracePointEdit").click(function(){
+            var row = $('#tracePoint_list').datagrid('getSelected');
+            if(row){
+                OpenTab('编辑位置点','${path}/trace/tracePointEdit?id='+row.id,'');
+            }else{
+                $.messager.alert('提示','请选择一条记录!','warning');
+            }
+        });
+
+        $("#tracePointRemove").click(function(){
+            var row = $('#tracePoint_list').datagrid('getSelected');
+            if(row){
+                $.messager.confirm('提示',"您确定要删除位置点<font color='#8b0000'>"+row.pname+"</font>吗？",function(r){
+                    if(r){
+                        $.post('${path}/trace/tracePointDelete',{id:row.id},function(data){
+                            if (data.mta==1){
+                                $('#tracePoint_list').datagrid('reload');
+                                $.messager.alert('提示',data.msg,'info');
+                            }else{
+                                $.messager.alert('提示',data.msg,'error');
+                            }
+                            $('#fundStock_list').datagrid('reload');
+                        },'json');
+                    }
+                });
+            }else{
+                $.messager.alert('提示','请选择一条记录!','warning');
+            }
+        });
+
+        $("#tracePoint_list_search").click(function(){
+            var pname_s = $("#pname_s").val();
+            var address_s = $("#address_s").val();
+            $("#tracePoint_list").datagrid('load',{
+                pname:pname_s,
+                address:address_s
+            })
+        });
+
+    });
+</script>
+</body>
+</html>

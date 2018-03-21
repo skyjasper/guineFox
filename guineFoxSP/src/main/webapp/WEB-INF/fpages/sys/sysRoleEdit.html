@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>添加</title>
+</head>
+<body>
+<div class="easyui-panel" title="编辑股票" style="width:94%;hight:80%">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_sys_role_edit" class="easyui-form" action="${path}/sys/sysRoleEdit" method="post" data-options="novalidate:true">
+            <input type="text" style="display:none" name="id" id="id"  value="${sysRole.id}" />
+            <table cellpadding="5">
+                <tr>
+                    <td>角色名称:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="roleName" value="${sysRole.roleName}" data-options="required:true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>角色描述:</td>
+                    <td><input class="easyui-textbox" type="text" name="description" value="${sysRole.description}" data-options="required:true" /></td>
+                </tr>
+                <tr>
+                    <td>是否可用:</td>
+                    <td>
+                        <select class="easyui-combobox" name="available" data-options="required:true">
+							<#list availableEnumMap?keys as k>
+							   <#if k == "${sysRole.available}">
+                                    <option value="${k}"  selected="selected">--${availableEnumMap[k]}--</option>
+                                </#if>
+                                <#if k != "${sysRole.available}">
+                                    <option value="${k}">--${availableEnumMap[k]}--</option>
+                                </#if>
+       						</#list>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="text-align:right;padding:10px;padding-bottom: 10px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-submit" style="width:90px" onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c4" iconCls="icon-otherclose" style="width:90px" onclick="closeCurr()">关闭</a>
+    </div>
+</div>
+<script>
+    function submitForm(){
+        $('#ff_sys_role_edit').form('submit',{
+            onSubmit:function(){
+              return $(this).form('enableValidation').form('validate');
+            },
+            success : function(data) {
+                var obj_json = $.parseJSON(data);
+                if(obj_json.mta==1){
+                    $.messager.alert('提示',obj_json.msg,'info');
+                    var currTab = $('#tt').tabs('getSelected');
+                    var currIndex = currTab.panel('options').index;
+                    $('#tt').tabs('close',currIndex);
+                    $('#sysRole_list').datagrid('reload');
+                }else{
+                    $.messager.alert('提示',obj_json.msg,'error');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>添加组织</title>
+</head>
+<body>
+<div id="v_sys_organization_add">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_organization_add" class="easyui-form" action="${path}/sys/organization/sysOrganizationAdd" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>名称:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="orgName" data-options="required:true" />
+                        <input type="text" name="parentId" id="parentId" value="${parentId}" style="display:none"/>
+                        <input type="text" name="available" id="available" value="0" style="display:none"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td>
+                        <input class="easyui-textbox" name="description" data-options="multiline:true"
+                               style="height:108px;width:198px"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<script>
+    function submitOrgationsForm(){
+        $('#ff_organization_add').form('submit',{
+            onSubmit:function(){
+              return $(this).form('enableValidation').form('validate');
+            }, success : function(data) {
+                processAddOrgations(data,d);
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

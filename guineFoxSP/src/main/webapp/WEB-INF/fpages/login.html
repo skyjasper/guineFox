@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8" />
+    <title>润享生活</title>
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+    <link href="${path}/gui/login/styles.css" rel="stylesheet" />
+    <link href="${path}/gui/login/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+
+    <script type="text/javascript" src="${path}/gui/js/jquery-3.3.1.js"></script>
+    <script src="${path}/gui/login/jquery-ui-1.8.16.custom.min.js"></script>
+</head>
+<script type="text/javascript">
+	// 禁止登录页内嵌
+	if (window != top){
+		parent.location.href = location.href; 
+	}
+    //禁止右键菜单
+    function stop() {
+        return false;
+    }
+    document.oncontextmenu = stop;
+
+    var flag_v ="${flag_v}";
+	
+	$(function() {
+     if(flag_v=="1"){
+         alert("您当前浏览器无法兼容本系统！\n推荐使用Chrome浏览器！\n\n其它浏览器：\nfireFox浏览器\nUC浏览器\n360急速浏览器\n搜狗浏览器3\n世界之窗极速版\n猎豹浏览器\n百度浏览器\nIE10及以上版本");
+     }
+        //获取光标
+		$('form :input:first').focus();
+        //enter 提交
+		$('form :input').keyup(function(event) {
+			if (event.keyCode == 13) {
+                var k = 0;
+                $(".logininput").each(function(i, obj) {
+                    if ($(obj).val().trim() == "") {
+                        k++;
+                        $(this).css("border-color", "red");
+                        $(this).focus();
+                        return false;
+                    }
+                });
+                if (k != 0) return;
+                sub_form();
+			}
+		});
+        //验证码
+        $("#valic").click(function() {
+            $("#valic").attr("src", "${path}/guinea/verify?sky=" + new Date().getTime());
+        });
+        //失去光标红色 (所有的登录input)
+        $(".logininput").blur(function() {
+            if ($(this).val() == "") {
+                $(this).css("border-color", "red");
+            } else {
+                $(this).css("border-color", "#D9D6C4");
+            }
+        })
+        //办单提交和验证
+        $("#login_button").click(function() {
+            var k = 0;
+            $(".logininput").each(function(i, obj) {
+                if ($(obj).val().trim() == "") {
+                    k++;
+                    $(this).css("border-color", "red");
+                    $(this).focus();
+                    return false;
+                }
+            });
+            if (k != 0) return;
+            sub_form();
+        })
+	});
+
+    //表单提交
+    function sub_form(){
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var txtSN = $("#txtSN").val();
+        if(username==null||username==""||username.size<1){
+            $(".sub_msg").html("请输入用户名!");
+        }else if(password==null||password==""||password.size<1){
+            $(".sub_msg").html("请输入密码!");
+        }else if(txtSN==null||txtSN==""||txtSN.size<1){
+            $(".sub_msg").html("请输入验证码!");
+        }else{
+            $.ajax({
+                type : "post",
+                url : "${path}/login",
+                data : {
+                    loginName : username,
+                    password : password,
+                    verifycode : txtSN
+                },
+                dataType : "json",
+                success : function(data) {
+                    if (data.mta == 1) {
+                        window.location.href = "${path}/main_index?mimi="
+                                + new Date().getTime();
+                    } else {
+                        $("#valic").attr("src", "${path}/guinea/verify?mini="+ new Date().getTime());
+                        $(".sub_msg").html(data.msg);
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+<body id="login">
+    <div id="wrappertop"></div>
+
+    <!-- form start -->
+    <div id="wrapper">
+        <div id="content">
+
+            <div id="header">
+				<img src="${path}/gui/login/rxjt_mm.png" alt="RX"/>
+            </div>
+
+            <div id="darkbanner" class="banner320">
+                <h2 style='font-family: "Microsoft YaHei"'>润享生活运营系统 ┇ RUN XIANG</h2>
+            </div>
+
+            <div id="darkbannerwrap"></div>
+
+            <form method="post" action="javascript();" class="login_form">
+            	<fieldset class="form">
+					<p>
+						<label class="loginlabel" for="username"> 帐号:</label> <input
+							class="logininput ui-keyboard-input ui-widget-content ui-corner-all"
+							name="username" id="username" type="text"/>
+					</p>
+					<p>
+						<label class="loginlabel" for="password"> 密码:</label> <span>
+							<input class="logininput ui-keyboard-input ui-widget-content ui-corner-all" name="password"
+							id="password" type="password" />
+						</span>
+					</p>
+                    <p>
+                        <label class="loginlabel"> 验证码:</label> <span>
+							<input class="txtSNinput ui-keyboard-input ui-widget-content ui-corner-all" name="txtSN"
+                                    id="txtSN" type="text" />
+                                &nbsp; <img id="valic" style="width:90px;height:26px;" src="${path}/guinea/verify" />
+						</span>
+                    </p>
+
+					<div style="text-align: left; margin-left: 80px; margin-bottom: 5px; color: #BE1302;">
+                            <b class="sub_msg"></b>
+                     </div>
+
+					<p>
+                        <button id="login_button" type="button" class="positive" name="login_button">
+                        <img src="${path}/gui/login/key.png" /> &nbsp;登 &nbsp;录 &nbsp; &nbsp;&nbsp;</button>
+                        &nbsp; &nbsp;
+				    </p>
+                    <p class="registration">
+                        &nbsp; &nbsp;
+                        <a href="${path}/sys/register?japerd=2832" style="text-decoration: none;color: #2A2C2E;">注册</a>
+                    </p>
+            </fieldset>
+           </form>
+        </div>
+    </div>
+    <!-- form end -->
+
+    <div id="wrapperbottom_branding">
+        <div id="wrapperbottom_branding_text">
+            Powered by <b><a href="http://www.baidu.com" target="dialog">Jasper</a></b> runxiang team
+		</div>
+    </div>
+</body>
+</html>

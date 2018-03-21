@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html{width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+        #baidu_map{width:100%;height:500px;}
+        #result {width:100%}
+    </style>
+
+    <script type="text/javascript" src="${path}/gui/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=2.0&ak=935f7b99747f3845a0ec9eb5847b8720"></script>
+    <script type="text/javascript" src="${path}/gui/bmap/LuShu.js"></script>
+
+    <title>历史轨迹</title>
+</head>
+<body>
+<div id="baidu_map"></div>
+<div id="result"></div>
+<button id="run">开始</button>
+<button id="stop">停止</button>
+<button id="pause">暂停</button>
+<button id="hide">隐藏信息窗口</button>
+<button id="show">展示信息窗口</button>
+</body>
+</html>
+<script type="text/javascript">
+
+    var map = new BMap.Map("baidu_map");  // 创建Map实例
+    var point = new BMap.Point(121.535911,31.265886);
+    map.centerAndZoom(point, 16);  // 初始化地图,设置中心点坐标和地图级别
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+
+    //标注
+    var marker = new BMap.Marker(point);  // 创建标注
+    map.addOverlay(marker);               // 将标注添加到地图中
+    marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+
+    /**
+     轨迹
+     **/
+    var point_start = new BMap.Point(121.535665,31.266181);    //起点
+    var point_end = new BMap.Point(121.551676,31.273359);    //终点
+    var myIcon = new BMap.Icon("images/sim_car.png",
+            new BMap.Size(52, 26), {    //小车图片
+                imageOffset: new BMap.Size(0, 0)    //图片的偏移量。为了是图片底部中心对准坐标点。
+            });
+
+    var tilte='<font color="#126499">车牌：</font><font color="#8a2be2">浙B33234</font><br/><font color="#126499">卡号：</font><font color="#8a2be2">13877767767</font><br/><font color="#126499">驾驶员：</font><font color="#8a2be2">李敏</font>';
+
+    var lushu;
+    var bounds = new Array();
+    var opacity_car = 0.85;//透明度
+    var opacity_step = 0.35;//透明度
+
+    // //初始化
+    // function initLine(){
+    //   map.clearOverlays(); // 清空覆盖物
+    // }
+
+    /**
+     autoViewport ,是否启用地图层(启用自动调整地图层级，当指定了搜索结果所展现的地图时有效。)
+     renderOptions 参数中有map ,则有起点和终点，否则没有起点终点按钮
+     renderOptions:{map: map, autoViewport: true}
+     **/
+    var driving_temp = new BMap.DrivingRoute(map, {renderOptions:{autoViewport: true}});    //驾车实例
+    /****
+     发起检索，显示一条公交路线
+     ***/
+    driving_temp.search(point_start, point_end);    //显示一条公交线路
+
+    //可以自定义轨迹坐标
+    var addPoints = function(points){
+        for(var i = 0; i < points.length; i++){
+            var point = points[i];
+            // console.info("lat:"+point.lat+" -lng:"+point.lng);
+            bounds.push(point);
+        }
+    }
+    /**
+     通过onSearchComplete回调函数参数可以获得BMap.LocalResult对象实例，
+     它包含了每一次搜索结果的数据信息。
+     **/
+    var output = "从上地到西单驾车需要";
+    driving_temp.setSearchCompleteCallback(function(){
+        var arrPois =[];
+        //返回状态码
+        if (driving_temp.getStatus() == BMAP_STATUS_SUCCESS) {
+            //返回最近一次的检索结果
+            var planReult = driving_temp.getResults();
+            var planRoute = planReult.getPlan(0);//返回第一条检索方案
+            // var route0 = planRoute.getRoute(0);//返回方案中的第一条路线
+            // var pathPoints = route0.getPath();//返回路线中的坐标集合
+            // var arrPois =[];
+            //  	output += planRoute.getDuration(true) + "\n";                //获取时间
+            // output += "总路程为：" ;
+            // output += planRoute.getDistance(true) + "\n";             //获取距离
+            //路线中点的集合(这里可以重写)
+            for(var j=0;j<planRoute.getNumRoutes();j++){
+                //检索的第j条路线
+                var route = planRoute.getRoute(j);
+                //如果路线直接距离<=0跳过（坐标路线错误）
+                if (route.getDistance(false) <= 0){
+                    continue;
+                }
+                var array_del = route.getPath();//点集合
+                addPoints(array_del);
+                // arrPois= arrPois.concat(array_del);
+                // 驾车线路(黑色)
+                if(route.getRouteType() == BMAP_ROUTE_TYPE_DRIVING){
+                    map.addOverlay(new BMap.Polyline(array_del,
+                            {strokeColor: "#111",strokeOpacity:opacity_car,strokeWeight:6,enableMassClear:true}));
+                }else{
+                    // 步行线路有可能为0 （绿色）
+                    map.addOverlay(new BMap.Polyline(array_del,
+                            {strokeColor: "#30a208",strokeOpacity:opacity_step,strokeWeight:4,enableMassClear:true}));
+                }
+            }
+            //for end
+            // map.setViewport(arrPois);
+            map.setViewport(bounds);
+            /**
+             路书
+             **/
+            lushu = new BMapLib.LuShu(map,bounds,{
+                //'<span onclick="finish_by_id('+id+')"><font color="#5f9ea0">完成</font></span>'
+                defaultContent:tilte,
+                autoView:true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+                icon  : new BMap.Icon('${path}/gui/images/sim_car.png', new BMap.Size(52,26),{anchor : new BMap.Size(27, 13)}),
+                speed: 300,//单位米/秒
+                enableRotation:false,//是否设置marker随着道路的走向进行旋转
+                landmarkPois: [
+                    {lng:121.537943,lat:31.266168,html:'加油站<div><img src="${path}/gui/images/gas.png"/></div>',pauseTime:5}
+                ]});
+            //lushu end
+        }
+        //状态码end
+    });
+
+
+    //绑定事件
+    $("#run").click(function(){
+         lushu.start();
+//        console.info("output:"+output)
+    });
+    $("#stop").click(function(){
+        lushu.stop();
+    });
+    $("#pause").click(function(){
+        lushu.pause();
+    });
+    $("#hide").click(function(){
+        lushu.hideInfoWindow();
+    });
+    $("#show").click(function(){
+        lushu.showInfoWindow();
+    });
+</script>

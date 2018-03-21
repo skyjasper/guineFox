@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>股票流水</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="fundTransactrate_list" title="股票流水" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/fund/fundTransactrateList',
+              toolbar:'[id^=fundTransactrateTab]',
+              rownumbers:true">
+    <thead>
+    <tr>
+        <th field="scode" width="90">代码</th>
+        <th field="ssname" width="100">名称</th>
+        <th field="ttypeName" width="90">交易类型</th>
+        <th field="tratio" width="100">交易价格(￥)</th>
+        <th field="scounts" width="100">交易数量(手)</th>
+        <th field="scountg" width="100">交易数量(股)</th>
+        <th field="mvalue" width="100">交易金额(￥)</th>
+        <th field="ttime" formatter="todateTime" width="170">交易日期</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="fundTransactrateTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" id="fundTransactrateAdd">添加</a>
+    <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'" onclick="">导出</a>
+</div>
+<div id="fundTransactrateTab_2">
+    代码 :<input id="code_s" class="easyui-textbox" type="text" name="scode"/>
+    名称 :<input id="name_s" class="easyui-textbox" type="text" name="sname"/>
+    交易类型:
+    <select id="ttype_s" panelHeight="auto" style="width:100px" name="stype_s">
+        <option value="">--请选择--</option>
+        <#list transactrateTypeMap?keys as k>
+            <option value="${k}">--${transactrateTypeMap[k]}--</option>
+        </#list>
+    </select>
+    <span class="easyui-linkbutton" iconCls="icon-search" id="fundStock_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'" id="fund_transatrate_export_03">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'" id="fundTransactrateExport_10">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+
+$(function(){
+
+    $("#fund_transatrate_export_10").click(function(){
+         window.location.href="${path}/fundTransactrateExport_10";
+    });
+
+    $("#fundTransactrateAdd").click(function(){
+        openNav('${path}/fundTransactrateAdd','添加股票流水');
+    });
+
+    $("#fundStock_list_search").click(function(){
+        var ttype_s=$("#ttype_s").find("option:selected").val();
+        var code_s = $("#code_s").val();
+        var name_s = $("#name_s").val();
+        $("#fundTransactrate_list").datagrid('load',{
+            ttype:ttype_s,
+            scode:code_s,
+            ssname:name_s
+        })
+    });
+
+});
+</script>
+</body>
+</html>

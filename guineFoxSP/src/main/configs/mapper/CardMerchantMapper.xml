@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.card.CardMerchantMapper" >
+
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.card.CardMerchant" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="operator_id" property="operatorId" jdbcType="BIGINT" />
+    <result column="code" property="code" jdbcType="BIGINT" />
+    <result column="rate" property="rate" jdbcType="FLOAT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="operator_name" property="operator_name" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from fund_card_merchant
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByCode" parameterType="java.lang.Long" >
+    delete from fund_card_merchant
+    where code = #{code,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.card.CardMerchant" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fund_card_merchant (operator_id, code, rate, 
+      name)
+    values (#{operatorId,jdbcType=BIGINT}, #{code,jdbcType=BIGINT}, #{rate,jdbcType=FLOAT},
+      #{name,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.card.CardMerchant" >
+    update fund_card_merchant
+    set operator_id = #{operatorId,jdbcType=BIGINT},
+      code = #{code,jdbcType=BIGINT},
+      rate = #{rate,jdbcType=FLOAT},
+      name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id`,`code`,operator_id,rate,`name` from fund_card_merchant where `id` = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select `id`,`code`,operator_id,rate,`name` from fund_card_merchant where `code` = #{code,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, operator_id, code, rate, `name`
+    from fund_card_merchant
+  </select>
+
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT fcm.id,fcm.`code`,fcm.`rate`,fcm.`name`,fcm.`operator_id`,fco.`name` AS operator_name FROM fund_card_merchant fcm LEFT JOIN fund_card_operator fco
+    ON fcm.`operator_id` = fco.`id`
+    <where>
+      <if test="operatorId !=null">
+        and `operator_id` = #{operatorId}
+      </if>
+      <if test="null!=code and ''!=code">
+        and `code` LIKE CONCAT('%',#{code},'%')
+      </if>
+      <if test="null!=name and ''!=name">
+        and fcm.`name` LIKE CONCAT('%',#{name},'%')
+      </if>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,157 @@
+<div class="easyui-accordion" data-options="fit:true,border:false">
+    <div title="财务管理" data-options="selected:true" style="padding:8px;">
+        <ul class="easyui-tree">
+            <!-- task start -->
+            <li iconCls="icon-base">
+                <span>计划任务管理</span>
+                <ul>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/task/task_plan_remind_list','任务提醒设置')">任务提醒设置</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/task/taskSocketTest','webSocket')">ws测试</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="OpenTab('历史轨迹','${path}/task/location_histroy')">历史轨迹</a>
+                    </li>
+                </ul>
+            </li>
+            <!-- task start -->
+            <!-- card start -->
+            <li iconCls="icon-base">
+                <span>卡交易管理</span>
+                <ul>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/card_transactrate_info_list','刷刷')">刷刷</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/card_operator_list','运营商配置')">运营商配置</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/card_merchant_list','商户配置')">商户配置</a>
+                    </li>
+                </ul>
+            </li>
+            <!--card end -->
+            <!-- fundstock start -->
+            <li iconCls="icon-base">
+                <span>股票管理</span>
+                <ul>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/fundStockList','股票配置')">股票配置</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/fundTransactrateList','股票流水')">股票流水</a>
+                    </li>
+                </ul>
+            </li>
+            <!-- fundstock end -->
+        </ul>
+       </li>
+      </ul>
+    </div>
+    <div title="系统管理" style="padding:10px;">
+        <ul class="easyui-tree">
+            <!-- start -->
+            <li iconCls="icon-base" data-options="state:'closed'">
+                <span>关闭</span>
+                <ul>
+                    <li iconCls="icon-gears">index.html</li>
+                    <li iconCls="icon-gears">about.html</li>
+                    <li id="li_mu_wy" iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="OpenTab('网易','http://www.163.com/','')">网易</a>
+                    </li>
+                    <@shiro.hasRole name="admin">
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="openNav('sysaccountPage')">page</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="openNav('showIP')">showIP</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="openNav('hello')">parser</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="OpenTab('baidu','${path}/map_bmain.map','')">百度地图</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="OpenTab('gaode','${path}/map_gmain.map','')">高德地图</a>
+                    </li>
+                     </@shiro.hasRole>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="OpenTab('shuru','${path}/map/point.map','')">地图输入</a>
+                    </li>
+                </ul>
+            </li>
+        <!-- end -->
+
+        <!-- start -->
+        <li iconCls="icon-base">
+            <span>测试</span>
+                  <ul>
+                        <li iconCls="icon-gears">
+                            <a href="javascript:void(0)" class="e-link"  onclick="OpenTab('百度','https://www.baidu.com/','')">百度</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/sys/editpwd','修改密码')">修改密码</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/meInfo','个人信息修改')">个人信息修改</a>
+                        </li>
+                        <@shiro.hasPermission name="user">
+                       <li iconCls="icon-gears">
+                          <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/uploadify/uploadConfig','上传配置')">上传配置</a>
+                       </li>
+                       <li iconCls="icon-gears">
+                              <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/uploadify/uploadify','文件上传')">文件上传</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/sys/sysAccountList','查看用户')">查看用户</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/sys/admin/sysAccountManagerList','用户管理')">用户管理</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/sys/onLineUserList','在线用户')">在线用户</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/sys/sysRoleList','角色管理')">角色管理</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a class="e-link" href="javascript:void(0)" onclick="OpenTab('资源管理','${path}/sys/sysResourceList','')">资源管理</a>
+                        </li>
+                        <li iconCls="icon-gears">
+                            <a class="e-link" href="javascript:void(0)" onclick="OpenTab('组织管理','${path}/sys/organization/sysOrganizationList','')">组织管理</a>
+                        </li>
+                    </@shiro.hasPermission>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/trace/tracePointList','位置点')">位置点</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="OpenTab('报表展示pie','${path}/reportList_pie','')">报表展示pie</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="OpenTab('报表展示line','${path}/reportList_line','')">报表展示line</a>
+                    </li>
+             </ul>
+         </li>
+        <!-- end -->
+
+       </ul>
+    </div>
+    <div title="个人信息" style="padding:8px">
+        <ul class="easyui-tree">
+            <li iconCls="icon-base">
+                <span>个人信息管理</span>
+                <ul>
+                    <li iconCls="icon-gears">
+                        <a href="javascript:void(0)" class="e-link" onclick="openNav('${path}/sys/editpwd','密码修改')">密码修改</a>
+                    </li>
+                    <li iconCls="icon-gears">
+                        <a class="e-link" href="javascript:void(0)" onclick="openNav('${path}/meInfo','基本信息')">基本信息</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

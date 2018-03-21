@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.card.CardOperatorMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.card.CardOperator" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from fund_card_operator
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.card.CardOperator" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fund_card_operator (name)
+    values (#{name,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.card.CardOperator" >
+    update fund_card_operator
+    set name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, name
+    from fund_card_operator
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select id, name
+    from fund_card_operator
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, name
+    from fund_card_operator
+  </select>
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select id, name
+    from fund_card_operator
+    <where>
+      <if test="id !=null">
+        and `id` = #{id}
+      </if>
+      <if test="null!=name and ''!=name">
+        and `name` LIKE CONCAT('%',#{name},'%')
+      </if>
+    </where>
+  </select>
+</mapper>

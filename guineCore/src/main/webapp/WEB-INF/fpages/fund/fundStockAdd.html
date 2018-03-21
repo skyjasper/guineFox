@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>添加</title>
+</head>
+<body>
+<div id="v_fund_stock_add" class="easyui-panel" title="添加股票" style="width:94%;hight:80%">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_fund_stock_add" class="easyui-form" action="${path}/fund/fundStockAdd" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>代码:</td>
+                    <td><input class="easyui-textbox" type="text" name="scode" data-options="required:true" /></td>
+                </tr>
+                <tr>
+                    <td>名称:</td>
+                    <td><input class="easyui-textbox" type="text" name="sname" data-options="required:true" /></td>
+                </tr>
+                <tr>
+                    <td>类型:</td>
+                    <td>
+                        <select class="easyui-combobox" name="stype" data-options="required:true">
+                            <#list stockTypeMap?keys as k>
+                                <#if k == "1">
+                                    <option value="${k}" selected="selected">--${stockTypeMap[k]}--</option>
+                                </#if>
+                                <#if k != "1">
+                                    <option value="${k}">--${stockTypeMap[k]}--</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>板块:</td>
+                    <td>
+                        <select class="easyui-combobox" name="space" data-options="required:true">
+                            <#list stockPaceMap?keys as k>
+                                <#if k == "4">
+                                    <option value="${k}" selected="selected">--${stockPaceMap[k]}--</option>
+                                </#if>
+                                <#if k != "4">
+                                    <option value="${k}">--${stockPaceMap[k]}--</option>
+                                </#if>
+                            </#list>
+                        </select>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="text-align:right;padding:10px;padding-bottom: 10px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-submit" style="width:90px" onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c4" iconCls="icon-otherclose" style="width:90px" onclick="closeCurr()">关闭</a>
+    </div>
+</div>
+<script>
+    function submitForm(){
+        $('#ff_fund_stock_add').form('submit',{
+            onSubmit:function(){
+              return $(this).form('enableValidation').form('validate');
+            },
+            success : function(data) {
+                var obj_json = $.parseJSON(data);
+                if(obj_json.mta==1){
+                    $.messager.alert('提示',obj_json.msg,'info');
+                    var currTab = $('#tt').tabs('getSelected');
+                    var currIndex = currTab.panel('options').index;
+                    $('#tt').tabs('close',currIndex);
+                    $('#fundStock_list').datagrid('reload');
+                }else{
+                    $.messager.alert('提示',obj_json.msg,'error');
+                }
+            }
+        });
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+</script>
+</body>
+</html>

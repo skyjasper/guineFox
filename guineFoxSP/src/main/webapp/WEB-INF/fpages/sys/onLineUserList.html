@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>在线用户</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="onLineUser_list" title="在线用户" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/sys/onLineUserList',
+              toolbar:'[id^=onLineUserTab]',
+              rownumbers:true">
+    <thead>
+    <tr>
+        <th field="id" width="330">会话id</th>
+        <th field="username" width="90">用户名</th>
+        <th field="startTimestamp" width="150">登录时间</th>
+        <th field="lastAccessTime" width="150">最晚记录时间</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="onLineUserTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="fockOut">强制退出</a>
+    <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'">导出</a>
+</div>
+<div id="onLineUserTab_2">
+    代码 :<input id="code_s" class="easyui-textbox" type="text" name="scode"/>
+    名称 :<input id="name_s" class="easyui-textbox" type="text" name="sname"/>
+    <span class="easyui-linkbutton" iconCls="icon-search" id="fundStock_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+
+$(function(){
+    $("#fockOut").click(function(){
+        var row = $('#onLineUser_list').datagrid('getSelected');
+        if(row){
+            $.messager.confirm('提示',"您确定要强制退出用户<font color='#8b0000'>"+row.username+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/forceLogout',{sessionId:row.id},function(data){
+                        if (data.mta==1){
+                            $('#onLineUser_list').datagrid('reload');
+                             $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                        $('#onLineUser_list').datagrid('reload');
+                    },'json');
+                }
+            });
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#fundStock_list_search").click(function(){
+        var stype=$("#stype_sid").find("option:selected").val();
+        var space=$("#space_sid").find("option:selected").val();
+        var code_s = $("#code_s").val();
+        var name_s = $("#name_s").val();
+        $("#fundStock_list").datagrid('load',{
+            stype:stype,
+            scode:code_s,
+            space:space,
+            sname:name_s
+        })
+    });
+
+});
+</script>
+</body>
+</html>

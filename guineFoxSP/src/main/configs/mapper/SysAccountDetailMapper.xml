@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.SysAccountDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.SysAccountDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="weixin" property="weixin" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="nationality" property="nationality" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="SMALLINT" />
+    <result column="createBro" property="createbro" jdbcType="VARCHAR" />
+    <result column="createBroVersion" property="createbroversion" jdbcType="VARCHAR" />
+    <result column="careateSystem" property="careatesystem" jdbcType="VARCHAR" />
+    <result column="sfID" property="sfid" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="mlike" property="mlike" jdbcType="VARCHAR" />
+    <result column="skype" property="skype" jdbcType="VARCHAR" />
+    <result column="feixin" property="feixin" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from sys_account_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.SysAccountDetail" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_account_detail (uid, weixin, address, 
+      nationality, age, createBro, 
+      createBroVersion, careateSystem, sfID, 
+      city, mlike, skype, 
+      feixin, qq)
+    values (#{uid,jdbcType=BIGINT}, #{weixin,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{nationality,jdbcType=VARCHAR}, #{age,jdbcType=SMALLINT}, #{createbro,jdbcType=VARCHAR}, 
+      #{createbroversion,jdbcType=VARCHAR}, #{careatesystem,jdbcType=VARCHAR}, #{sfid,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{mlike,jdbcType=VARCHAR}, #{skype,jdbcType=VARCHAR}, 
+      #{feixin,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.SysAccountDetail" >
+    update sys_account_detail
+    set uid = #{uid,jdbcType=BIGINT},
+      weixin = #{weixin,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      nationality = #{nationality,jdbcType=VARCHAR},
+      age = #{age,jdbcType=SMALLINT},
+      createBro = #{createbro,jdbcType=VARCHAR},
+      createBroVersion = #{createbroversion,jdbcType=VARCHAR},
+      careateSystem = #{careatesystem,jdbcType=VARCHAR},
+      sfID = #{sfid,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      mlike = #{mlike,jdbcType=VARCHAR},
+      skype = #{skype,jdbcType=VARCHAR},
+      feixin = #{feixin,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, uid, weixin, address, nationality, age, createBro, createBroVersion, careateSystem, 
+    sfID, city, mlike, skype, feixin, qq
+    from sys_account_detail
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, uid, weixin, address, nationality, age, createBro, createBroVersion, careateSystem, 
+    sfID, city, mlike, skype, feixin, qq
+    from sys_account_detail
+  </select>
+
+  <select id="selectByObj" parameterType="com.guinea.datadb.mysql.entity.SysAccountDetail" resultMap="BaseResultMap" >
+    select id, uid, weixin, address, nationality, age, createBro, createBroVersion, careateSystem,
+    sfID, city, mlike, skype, feixin, qq
+    from sys_account_detail
+    <where>
+      <if test="null!=id and ''!=id">
+        and `id` = #{id}
+      </if>
+      <if test="null!=uid and ''!=uid">
+        and `uid` = #{uid}
+      </if>
+    </where>
+  </select>
+</mapper>

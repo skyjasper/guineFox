@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.card.CardTransactrateInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.card.CardTransactrateInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="merchant_id" property="merchantId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="transactrate_money" property="transactrateMoney" jdbcType="DECIMAL" />
+    <result column="transactrate_time" property="transactrateTime" jdbcType="TIMESTAMP" />
+    <result column="ps" property="ps" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from fund_card_transactrate_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.card.CardTransactrateInfo" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fund_card_transactrate_info (merchant_id, user_id, transactrate_money, transactrate_time, ps)
+    values (#{merchantId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{transactrateMoney,jdbcType=DECIMAL}, 
+    #{transactrateTime,jdbcType=TIMESTAMP}, #{ps,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.card.CardTransactrateInfo" >
+    update fund_card_transactrate_info
+    set merchant_id = #{merchantId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      transactrate_money = #{transactrateMoney,jdbcType=DECIMAL},
+      transactrate_time = #{transactrateTime,jdbcType=TIMESTAMP},
+      ps = #{ps,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, merchant_id, user_id, transactrate_money,transactrate_time, ps
+    from fund_card_transactrate_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, merchant_id, user_id, transactrate_money,transactrate_time,ps
+    from fund_card_transactrate_info fcti
+  </select>
+
+  <!--结算日内的交易 t-1 日的结算-->
+  <select id="selectByPaymentTime" resultMap="BaseResultMap" >
+    select id, merchant_id, user_id, transactrate_money,transactrate_time,ps
+    from fund_card_transactrate_info fcti
+    <where>
+      <if test="null!=sttime and ''!=sttime">
+        <![CDATA[
+                and fcti.`transactrate_time` >= #{sttime}
+            ]]>
+      </if>
+      <if test="null!=ettime and ''!=ettime">
+        <![CDATA[
+                and fcti.`transactrate_time` <= #{ettime}
+            ]]>
+      </if>
+      <if test="null!=user_id and ''!=user_id">
+        and fcti.`user_id` = #{user_id,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select id, merchant_id, user_id, transactrate_money,transactrate_time,ps
+    from fund_card_transactrate_info fcti
+    <where>
+      <if test="id !=null">
+        and fcti.`id` = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="null!=sttime and ''!=sttime">
+        <![CDATA[
+              and fcti.`transactrate_time` >= #{sttime}
+          ]]>
+      </if>
+      <if test="null!=ettime and ''!=ettime">
+        <![CDATA[
+              and fcti.`transactrate_time` <= #{ettime}
+          ]]>
+      </if>
+      <if test="null!=merchant_id and ''!=merchant_id">
+        and fcti.`merchant_id` = #{merchant_id,jdbcType=BIGINT}
+      </if>
+      <if test="null!=user_id and ''!=user_id">
+        and fcti.`user_id` = #{user_id,jdbcType=BIGINT}
+      </if>
+      <if test="null!=transactrate_money and ''!=transactrate_money">
+        and fcti.`transactrate_money` = #{transactrate_money,jdbcType=DECIMAL}
+      </if>
+         order by fcti.transactrate_time desc
+    </where>
+  </select>
+
+</mapper>

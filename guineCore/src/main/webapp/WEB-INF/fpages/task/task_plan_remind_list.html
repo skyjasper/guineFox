@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>计划任务管理</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="task_plan_remind_list" title="任务提醒设置" iconCls="icon-point" style="display: none"
+       data-options=
+               "singleSelect:0,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/task/task_plan_remind_list',
+              toolbar:'[id^=taskPlanTab]',
+              rownumbers:true">
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'levelName',width:80,align:'centre',styler:stylerLevel">任务级别</th>
+        <th field="executeTypeName" width="80">执行方式</th>
+        <th data-options="field:'keyword',width:130,align:'centre',styler:stylerKeyword">关键字</th>
+        <th field="startTime" formatter="todateTime" width="150">任务时间</th>
+        <th field="content" width="158">任务内容</th>
+        <th field="isPastName" width="80">过时状态</th>
+        <th data-options="field:'isFinishName',width:80,align:'centre'">完成状态</th>
+        <th field="endTime" formatter="todateTime" width="150">失效时间</th>
+        <th field="discrible" width="120">详细描述</th>
+        <th data-options="field:'operators',width:90,iconCls:'icon-transactrate',align:'centre',formatter:operators">操作</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="taskPlanTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-task'" id="task_plan_remind_add">创建</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-finish'" id="task_plan_remind_finish">完成</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="task_plan_remind_delete">删除</a>
+    <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'" onclick="">导出</a>
+</div>
+<div id="taskPlanTab_2">
+    任务级别 :<input id="level_s" type="text" name="level"/>
+    过时状态 :<input id="isPast_s" type="text" name="isPast"/>
+    完成状态 :<input id="isFinish_s" type="text" name="isFinish"/>
+    关键字 :<input id="keyword_s" type="text" name="keyword"/>
+    任务时间 :<input id="startTime_s" type="text" name="startTime"/>
+    <span class="easyui-linkbutton" iconCls="icon-search" id="task_plan_remind_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#task_plan_remind_add").click(function(){
+            openNav('${path}/task/task_plan_remind_add','创建任务提醒');
+        });
+
+        $("#task_plan_remind_finish").click(function(){
+            var row = $('#task_plan_remind_list').datagrid('getSelections');
+            if(row){
+                var ids = "";
+                $.each(row, function(key, val) {
+                    ids +=val.id+",";
+                });
+                finish_by_id(ids)
+            }else{
+                $.messager.alert('提示','请选择一条记录!','warning');
+            }
+        });
+
+     $("#task_plan_remind_delete").click(function(){
+            var row = $('#task_plan_remind_list').datagrid('getSelections');
+            if(row){
+                var ids = "";
+                $.each(row, function(key, val) {
+                    ids +=val.id+",";
+                });
+                $.messager.confirm('提示',"您确定要删除吗？",function(r){
+                    if(r){
+                        $.post('${path}/task/task_plan_remind_delete',{ids:ids},function(data){
+                            if (data.mta==1){
+                                $('#task_plan_remind_list').datagrid('reload');
+                                $.messager.alert('提示',data.msg,'info');
+                            }else{
+                                $.messager.alert('提示',data.msg,'error');
+                            }
+                            $('#task_plan_remind_list').datagrid('reload');
+                        },'json');
+                    }
+                });
+            }else{
+                $.messager.alert('提示','请选择一条记录!','warning');
+            }
+        });
+
+        $("#task_plan_remind_list_search").click(function(){
+            var pname_s = $("#pname_s").val();
+            var address_s = $("#address_s").val();
+            $("#task_plan_remind_list").datagrid('load',{
+                pname:pname_s,
+                address:address_s
+            })
+        });
+
+
+    });
+
+    /**
+     * 操作列
+     * @returns {string}
+     */
+    function operators(val,row) {
+        var isFinish= row.isFinish;
+        var id = row.id;
+        if(isFinish==0){// #ff8c00 5f9ea0
+           return '<span onclick="finish_by_id('+id+')"><font color="#5f9ea0">完成</font></span>';
+        }else{
+            return '';
+        }
+    }
+
+    function finish_by_id(id){
+        $.post('${path}/task/task_plan_remind_finish',{id:id},function(data){
+            if (data.mta==1){
+                $('#task_plan_remind_list').datagrid('reload');
+                $.messager.alert('提示',data.msg,'info');
+            }else{
+                $.messager.alert('提示',data.msg,'error');
+            }
+        },'json');
+    }
+
+    function stylerLevel(value,row,index){
+        var s_level = row.level;
+        var result = '';
+        if(s_level==2){
+            result ='color:red;';
+        }else if(s_level==3){
+            result ='background-color:#7b68ee;';
+        }
+       return result;
+    }
+
+    function stylerKeyword(value,row,index){
+        var s_finish = row.isFinish;
+        var result = '';
+        if(s_finish==0){
+            result ='color:#ff8c00;';
+        }
+        return result;
+    }
+
+    function openMessage(){
+        $().toastmessage('showToast', {
+            text     : '兄弟们，到点吃饭了！！！',
+            sticky   : false,
+            position : 'top-right',
+            type     : 'error',
+            stayTime:         30000,
+            inEffectDuration:  600,
+            close    : function () {
+
+            }
+        });
+    }
+
+
+
+    function closeMessage(){
+        var title = "鲁毛";
+        var options = {
+            body: "波波桑起床了",
+            icon: "${path}/gui/taskMessage/images/admin.png"
+        };
+        // 如果是IE的处理方式
+        if (!("Notification" in window)) {
+            alert("波波桑起床了");
+        }else if (Notification.permission === "granted") {//非ie 的情况
+            // If it's okay let's create a notification
+            var notification = new Notification(title, options);
+            notification.onshow = function() {
+                setTimeout(function() {
+                    notification.close();
+                }, 30000);
+            };
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                // If the user accepts, let's create a notification
+                if (permission === "granted") {
+                    var notification = new Notification(title, options);
+                    notification.onshow = function() {
+                        setTimeout(function() {
+                            notification.close();
+                        }, 30000);
+                    };
+                }
+            });
+        }
+    }
+
+
+</script>
+</body>
+</html>

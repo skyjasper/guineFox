@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.card.CardTransactratePaymentMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.card.CardTransactratePayment" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="merchant_id" property="merchantId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="total_transactrate_money" property="totalTransactrateMoney" jdbcType="DECIMAL" />
+    <result column="total_cash_payment" property="totalCashPayment" jdbcType="DECIMAL" />
+    <result column="transactrate_count" property="transactrateCount" jdbcType="SMALLINT" />
+    <result column="transactrate_date" property="transactrateDate" jdbcType="TIMESTAMP" />
+    <result column="wish_payment_time" property="wishPaymentTime" jdbcType="TIMESTAMP" />
+    <result column="ps" property="ps" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from fund_card_transactrate_payment
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.card.CardTransactratePayment" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fund_card_transactrate_payment (merchant_id, user_id, total_transactrate_money, 
+      total_cash_payment, transactrate_count, transactrate_date, 
+      wish_payment_time, ps)
+    values (#{merchantId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{totalTransactrateMoney,jdbcType=DECIMAL}, 
+      #{totalCashPayment,jdbcType=DECIMAL}, #{transactrateCount,jdbcType=SMALLINT}, #{transactrateDate,jdbcType=TIMESTAMP}, 
+      #{wishPaymentTime,jdbcType=TIMESTAMP}, #{ps,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.card.CardTransactratePayment" >
+    update fund_card_transactrate_payment
+    set merchant_id = #{merchantId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      total_transactrate_money = #{totalTransactrateMoney,jdbcType=DECIMAL},
+      total_cash_payment = #{totalCashPayment,jdbcType=DECIMAL},
+      transactrate_count = #{transactrateCount,jdbcType=SMALLINT},
+      transactrate_date = #{transactrateDate,jdbcType=TIMESTAMP},
+      wish_payment_time = #{wishPaymentTime,jdbcType=TIMESTAMP},
+      ps = #{ps,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, merchant_id, user_id, total_transactrate_money, total_cash_payment, transactrate_count, 
+    transactrate_date, wish_payment_time, ps
+    from fund_card_transactrate_payment
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, merchant_id, user_id, total_transactrate_money, total_cash_payment, transactrate_count, 
+    transactrate_date, wish_payment_time, ps
+    from fund_card_transactrate_payment
+  </select>
+</mapper>

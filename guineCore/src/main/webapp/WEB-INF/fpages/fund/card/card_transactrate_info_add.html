@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>添加</title>
+</head>
+<body>
+<div id="v_ff_card_transactrate_info_add" class="easyui-panel" title="单笔交易" style="width:94%;hight:80%">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_card_transactrate_info_add" class="easyui-form"
+              action="${path}/fund/card/card_transactrate_info_add" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>商户:</td>
+                    <td>
+                        <select class="easyui-combobox" id="merchant_id_s" style="width:298px" name="merchantId">
+                            <#list cardMerchantMap?keys as k>
+                                <#if k == "${cardMerchant.code}">
+                                    <option value="${k}" selected="selected">${k} --${cardMerchantMap[k]}</option>
+                                </#if>
+                                <#if k != "${cardMerchant.code}">
+                                    <option value="${k}">${k} --${cardMerchantMap[k]}</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>费率:</td>
+                    <td>
+                        <input class ="easyui-textbox" type="text" name="rate" disabled="true" id="rate_s"
+                               style="width:298px;" value="${cardMerchant.rate}"/>
+                        <font color="red">(%)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>交易金额:</td>
+                    <td><input class="easyui-numberbox" precision="0" max="99999999" maxlength="8"
+                               style="text-align:right;width:298px;"
+                               type="text" id="transactrateMoney_" name="transactrateMoney"
+                               data-options="required:true"/>
+                        <font color="red">(￥)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>交易时间:</td>
+                    <td>
+                        <input name="transactrateTime" id="transactrateTime_" class="easyui-datetimebox" required
+                               style="width:298px">
+                    </td>
+                </tr>
+                <tr>
+                    <td>说明:<font color="#b22222"></font></td>
+                    <td>
+                        <input class="easyui-textbox" name="ps" style="width:298px;height:30px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>预期结算金额:</td>
+                    <td>
+                        <input class="easyui-numberbox" type="text" name="cashPayment_n" disabled="true" id="cashPayment_"
+                               style="width:298px;" data-options="required:true,precision:6"/>
+                        <input style="display:none" type="text" name="cashPayment" id="cashPayment_n_"/>
+                        <font color="red">(￥)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>预期结算时间:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="cashTime_n" disabled="true" id="cashTime_"
+                               style="width:298px;" data-options="required:true,precision:6"/>
+                        <font color="red"></font>
+                        <input style="display:none" type="text" name="cashTime" id="cashTime_n_"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><font color="#4b0082">消息:</font></td>
+                   <td> <div id="tipmsg_fund" class="easyui-draggable easyui-resizable" data-options="handle:'#mytitle'" style="width:298px;height:158px;border:1px solid #ccc">
+                       <div id="mytitle" style="background:#add8e6;padding:3px;">提示信息</div>
+                       <div style="padding:10px" id="f_result">
+                       </div>
+                   </div></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="text-align:right;padding:10px;padding-bottom: 10px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-submit" style="width:90px"
+           onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c2" iconCls="icon-submit" style="width:90px"
+           onclick="matchForm()">计算</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c8" iconCls="icon-otherclose" style="width:90px"
+           onclick="clearForm()">清空</a>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("#merchant_id_s").combobox({
+            onChange: function () {
+                var merchant_id = $('#merchant_id_s').combobox('getValue');
+                $.post("${path}/fund/card/card_transactrate_info_cascade",
+                        {merchant_id: merchant_id},
+                        function (data) {
+                            var obj_json = $.parseJSON(data);
+                            if (obj_json.mta == 1) {
+                                var value_json = $.parseJSON(obj_json.msg);
+                                $("#rate_s").textbox("setValue",value_json.rate);
+                            }
+                        });
+            }
+        });
+    })
+
+    //计算
+    function matchForm() {
+        var transactrateMoney = $("#transactrateMoney_").val();
+        var transactrateTime = $("#transactrateTime_").datetimebox("getValue");
+        var merchantId = $('#merchant_id_s').combobox('getValue');
+        $.post("${path}/fund/card/card_transactrate_info_match",
+                {
+                    transactrateMoney: transactrateMoney,
+                    transactrateTime, transactrateTime,
+                    merchantId, merchantId,
+                },
+                function (data) {
+                    var obj_json = $.parseJSON(data);
+                    var r_msg =$.parseJSON(obj_json.msg) ;
+                    var transactrateTimePay= r_msg.transactrateTimePay;
+                    var cash_payment= r_msg.cashPayment;
+                    var message =r_msg.message;
+                    $("#f_result").html(message);
+                    $("#cashTime_").textbox('setValue',transactrateTimePay);
+                    $("#cashPayment_").textbox('setValue',cash_payment);
+                    $("#cashPayment_n_").val(cash_payment);
+                    $("#cashTime_n_").val(transactrateTimePay);
+//                    $("#transactrateMoney_").numberbox({'disabled':true});
+                });
+    }
+
+    function submitForm() {
+        $('#ff_card_transactrate_info_add').form('submit', {
+            onSubmit: function () {
+                return $(this).form('enableValidation').form('validate');
+            },
+            success: function (data) {
+                var obj_json = $.parseJSON(data);
+                if (obj_json.mta == 1) {
+                    $.messager.alert('提示', obj_json.msg, 'info');
+                    var currTab = $('#tt').tabs('getSelected');
+                    var currIndex = currTab.panel('options').index;
+                    $('#card_transactrate_info_list').datagrid('reload');
+                    $('#tt').tabs('close', currIndex);
+                } else {
+                    $.messager.alert('提示', obj_json.msg, 'error');
+                }
+            }
+        });
+    }
+
+    function clearForm() {
+        $('#ff_card_transactrate_info_add').form('clear');
+    }
+</script>
+</body>
+</html>

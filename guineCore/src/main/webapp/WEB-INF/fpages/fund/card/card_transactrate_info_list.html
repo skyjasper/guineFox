@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>刷刷</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="card_transactrate_info_list" title="刷刷" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/fund/card/card_transactrate_info_list',
+              toolbar:'[id^=card_transactrate_infoTab]',
+              rownumbers:true">
+    <thead>
+    <tr>
+        <th field="merchantName" width="200">商户</th>
+        <th field="transactrateMoney" width="180">交易金额</th>
+        <th field="transactrateTime"  formatter="todateTime" width="230">交易时间</th>
+        <th field="ps" width="120">说明</th>
+        <th data-options="field:'operatorTemp',width:90,iconCls:'icon-transactrate',align:'centre',formatter:operatorRow">操作</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="card_transactrate_infoTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-transactrate'" id="card_transactrate_info_add">单笔交易</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-transactrates'" id="card_transactrate_info_bath_add">批量交易</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="card_transactrate_info_remove">删除</a>
+    <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'" onclick="">导出</a>
+</div>
+<div id="card_transactrate_infoTab_2">
+    商户 :
+    <select class="easyui-combobox" id="merchant_id_sl" style="width:298px" name="merchantId">
+        <option value="">-- 请选择 --</option>
+        <#list cardMerchantMap?keys as k>
+            <option value="${k}">${k} --${cardMerchantMap[k]}</option>
+        </#list>
+    </select>
+    交易金额 :<input class="easyui-textbox"  id="transactrateMoney_sl" type="text" name="transactrateMoney"/>
+    交易时间<input class="easyui-datebox" style="width:110px" name="transactrateTime_s" id="transactrateTime_sl" />
+    - <input class="easyui-datebox" style="width:110px" name="transactrateTime_e" id="transactrateTime_el" />
+    <span class="easyui-linkbutton" iconCls="icon-search" id="card_transactrate_info_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+$(function(){
+    $("#card_transactrate_info_add").click(function(){
+        openNav('${path}/card_transactrate_info_add','单笔交易');
+    });
+
+    $("#card_transactrate_info_bath_add").click(function(){
+        openNav('${path}/card_transactrate_info_bath_add','批量交易');
+    });
+
+    //查询
+    $("#card_transactrate_info_list_search").click(function(){
+        var merchant_id_sl = $('#merchant_id_sl').combobox('getValue');
+        var transactrateMoney_sl = $("#transactrateMoney_sl").textbox("getValue");
+        var transactrateTime_sl = $("#transactrateTime_sl").datebox("getValue");
+        var transactrateTime_el = $("#transactrateTime_el").datebox("getValue");
+        $("#card_transactrate_info_list").datagrid('load',{
+            merchant_id : merchant_id_sl,
+            transactrate_money : transactrateMoney_sl,
+            sttime : transactrateTime_sl,
+            ettime : transactrateTime_el
+        })
+    });
+
+    //删除
+    $("#card_transactrate_info_remove").click(function(){
+        var row = $('#card_transactrate_info_list').datagrid('getSelected');
+        if(row){
+            $.messager.confirm('提示',"您确定要删除这条记录吗？",function(r){
+                if(r){
+                    $.post('${path}/fund/card/card_transactrate_info_delete',{id:row.id},function(data){
+                        if (data.mta==1){
+                            $('#card_transactrate_info_list').datagrid('reload');
+                            $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                    },'json');
+                }
+            });
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+});
+
+/**
+ * 操作列
+ * @returns {string}
+ */
+function operatorRow(val,row) {
+    return '<span onclick="delete_by_id('+row.id+')"><font color="#a52a2a">删除</font></span>';
+}
+
+function delete_by_id(id){
+    $.messager.confirm('提示',"您确定要删除这条记录吗？",function(r){
+        if(r){
+            $.post('${path}/fund/card/card_transactrate_info_delete',{id:id},function(data){
+                if (data.mta==1){
+                    $('#card_transactrate_info_list').datagrid('reload');
+                    $.messager.alert('提示',data.msg,'info');
+                }else{
+                    $.messager.alert('提示',data.msg,'error');
+                }
+            },'json');
+        }
+    });
+}
+
+</script>
+</body>
+</html>

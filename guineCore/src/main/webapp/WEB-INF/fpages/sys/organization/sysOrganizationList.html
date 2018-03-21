@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>组织管理</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="${path}/gui/themes/jasper.css">
+    <link rel="stylesheet" href="${path}/gui/ztree/base.css" type="text/css">
+    <link rel="stylesheet" href="${path}/gui/ztree/metroStyle.css" type="text/css">
+    <script type="text/javascript" src="${path}/gui/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="${path}/gui/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="${path}/gui/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="${path}/gui/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="${path}/gui/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <SCRIPT type="text/javascript">
+        <!--
+        var setting = {
+            view: {
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },data: {
+                simpleData: {enable: true}
+            },edit: {
+                enable: true
+            },callback: {
+                beforeEditName: beforeEditName,
+                beforeRemove: beforeRemove
+            }
+        };
+
+        var zNodes=${ztreeNodes},code,newCount= 1, d,treeNodet;
+
+
+        function beforeRemove(treeId, treeNode) {
+            processRemoveOrgations(treeNode);
+            return false;
+        }
+
+        function setCheck() {
+            var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                    type ={ "Y" : "ps", "N" : "ps" };
+            zTree.setting.check.chkboxType = type;
+            showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+        }
+
+        function showCode(str) {
+            if (!code) code = $("#code");
+            code.empty();
+            code.append("<li>"+str+"</li>");
+        }
+
+        $(document).ready(function(){
+            $.fn.zTree.init($("#organizationTree"), setting, zNodes);
+            setCheck();
+        });
+
+        function processRemoveOrgations(treeNode){
+            $.messager.confirm('提示',"您确定要删除组织<font color='#8b0000'>"+treeNode.name+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/sys/organization/sysOrganizationDelete',{id:treeNode.id},function(data){
+                        if (data.mta==1){
+                            var zTree = $.fn.zTree.getZTreeObj("organizationTree");
+                            zTree.removeNode(treeNode);
+                            $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                    },'json');
+                }
+            });
+        }
+
+        //处理编辑回掉函数
+        function processEditOrgations(data,d){
+            var obj_json = $.parseJSON(data);
+            if(obj_json.mta==1){
+                var zTree = $.fn.zTree.getZTreeObj("organizationTree"), msg_json=obj_json.msg;
+                treeNodet.name=msg_json.orgName;
+                zTree.updateNode(treeNodet);
+                if(d!=null){
+                    d.panel('close');
+                }
+                $.messager.alert('提示','编辑成功','info');
+            }else{
+                $.messager.alert('提示',obj_json.msg,'error');
+            }
+        }
+
+        //处理添加回掉函数
+        function processAddOrgations(data,d){
+            var obj_json = $.parseJSON(data);
+            if(obj_json.mta==1){
+                var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                        msg_json=obj_json.msg;
+                zTree.addNodes(treeNodet,{id:msg_json.id, pId:msg_json.parentId, name:msg_json.orgName});
+                if(d!=null){
+                    d.panel('close');
+                }
+                $.messager.alert('提示','添加成功','info');
+            }else{
+                $.messager.alert('提示',obj_json.msg,'error');
+            }
+        }
+
+        //添加节点
+        function addHoverDom(treeId, treeNode) {
+            treeNodet=treeNode;
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0){
+                return;
+            }
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                    + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_"+treeNode.tId);
+            if (btn){
+                btn.bind("click", function(){
+                    addSysOrgationsProcess(treeNode.id);
+                    return false;
+                });
+            }
+        };
+
+        function beforeEditName(treeId, treeNode) {
+            editSysOrgationsProcess(treeNode.id);
+            return false;
+        }
+
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_"+treeNode.tId).unbind().remove();
+        }
+
+        //编辑节点处理
+        function editSysOrgationsProcess(id){
+            d=$("#dlg").dialog({
+                title: '编辑组织',
+                width: 380,
+                height: 390,
+                href:'${path}/sys/organization/sysOrganizationEdit?id='+id,
+                maximizable:true,
+                modal:true,
+                buttons:[{text:'确认',
+                    handler:function(){
+                        submitOrgationsEditForm();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        d.panel('close');
+                    }
+                }]
+            });
+        }
+
+        //添加节点处理
+        function addSysOrgationsProcess(parentId){
+            d=$("#dlg").dialog({
+                title: '添加组织',
+                width: 380,
+                height: 390,
+                href:'${path}/sys/organization/sysOrganizationAdd?parentId='+parentId,
+                maximizable:true,
+                modal:true,
+                buttons:[{text:'确认',
+                    handler:function(){
+                        submitOrgationsForm();
+                    }
+                },{
+                    text:'取消',
+                    handler:function(){
+                        d.panel('close');
+                    }
+                }]
+            });
+        }
+        //-->
+    </SCRIPT>
+</head>
+<body>
+    <div class="right">
+        <ul class="info">
+            <li class="title">
+                <h2>组织管理</h2>
+            </li>
+        </ul>
+    </div>
+    <div class="content_wrap">
+        <div class="zTreeBaseBackground left">
+            <ul id="organizationTree" class="ztree"></ul>
+        </div>
+    </div>
+    <div id="dlg"></div>
+</body>
+</html>

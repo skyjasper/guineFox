@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.SysAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.SysAccount" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sex" property="sex" jdbcType="SMALLINT" />
+    <result column="pwd" property="pwd" jdbcType="VARCHAR" />
+    <result column="salt" property="salt" jdbcType="VARCHAR" />
+    <result column="locked" property="locked" jdbcType="SMALLINT" />
+    <result column="isDelete" property="isdelete" jdbcType="SMALLINT" />
+    <result column="loginName" property="loginname" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="phoneNumber" property="phonenumber" jdbcType="VARCHAR" />
+    <result column="createIP" property="createip" jdbcType="VARCHAR" />
+    <result column="createCity" property="createcity" jdbcType="VARCHAR" />
+    <result column="kawyiName" property="kawyiname" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from sys_account
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.SysAccount" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_account (sex, pwd, salt, 
+      locked, isDelete, loginName, 
+      createTime, email, phoneNumber, 
+      createIP, createCity, kawyiName,`type`
+      )
+    values (#{sex,jdbcType=SMALLINT}, #{pwd,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, 
+      #{locked,jdbcType=SMALLINT}, #{isdelete,jdbcType=SMALLINT}, #{loginname,jdbcType=VARCHAR},
+      #{createtime,jdbcType=TIMESTAMP}, #{email,jdbcType=VARCHAR}, #{phonenumber,jdbcType=VARCHAR}, 
+      #{createip,jdbcType=VARCHAR}, #{createcity,jdbcType=VARCHAR}, #{kawyiname,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.SysAccount" >
+    update sys_account
+    set sex = #{sex,jdbcType=SMALLINT},
+      pwd = #{pwd,jdbcType=VARCHAR},
+      salt = #{salt,jdbcType=VARCHAR},
+      locked = #{locked,jdbcType=SMALLINT},
+      isDelete = #{isdelete,jdbcType=SMALLINT},
+      loginName = #{loginname,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      email = #{email,jdbcType=VARCHAR},
+      phoneNumber = #{phonenumber,jdbcType=VARCHAR},
+      createIP = #{createip,jdbcType=VARCHAR},
+      createCity = #{createcity,jdbcType=VARCHAR},
+      kawyiName = #{kawyiname,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, sex, pwd, salt, locked, isDelete, loginName, createTime, email, phoneNumber, 
+    createIP, createCity, kawyiName,type
+    from sys_account
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByNoDelete" resultMap="BaseResultMap" >
+    select id, sex, pwd, salt, locked, isDelete, loginName, createTime, email, phoneNumber,
+    createIP, createCity, kawyiName,type
+    from sys_account
+    where isDelete = 1
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, sex, pwd, salt, locked, isDelete, loginName, createTime, email, phoneNumber, 
+    createIP, createCity, kawyiName,type
+    from sys_account
+  </select>
+
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select id, sex, locked, isDelete, loginName, createTime, email, phoneNumber,
+    createIP, createCity, kawyiName,type
+    from sys_account
+    <where>
+      <if test="null!=id and ''!=id">
+        and `id` = #{id}
+      </if>
+      <if test="null!=loginName and ''!=loginName">
+        and `loginName` LIKE CONCAT('%',#{loginName},'%')
+      </if>
+      <if test="null!=email and ''!=email">
+        and `email` LIKE CONCAT('%',#{email},'%')
+      </if>
+      <if test="null!=locked and ''!=locked">
+        and `locked` = #{locked}
+      </if>
+      <if test="null!=isdelete and ''!=isdelete">
+        and `isdelete` = #{isdelete}
+      </if>
+      <if test="null!=kawyiName and ''!=kawyiName">
+        and `kawyiName` LIKE CONCAT('%',#{kawyiName},'%')
+      </if>
+      <if test="null!=createTime_s and ''!=createTime_s">
+        <![CDATA[
+              and `createTime` >= #{createTime_s}
+          ]]>
+      </if>
+      <if test="null!=createTime_e and ''!=createTime_e">
+        <![CDATA[
+              and `createTime` <= #{createTime_e}
+          ]]>
+      </if>
+    </where>
+    ORDER  BY createTime DESC
+  </select>
+
+  <select id="findByPageDetail" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select acct.id,acct.`isDelete`, acct.kawyiName,acct.sex, acct.loginName, acct.createTime, acct.email, acct.phoneNumber,
+    acct.createip, acct.createcity, acct.kawyiName,adetail.createBro,adetail.careateSystem
+    from sys_account acct LEFT JOIN sys_account_detail adetail ON acct.id = adetail.uid
+    <where>
+       and acct.`isDelete`=1
+      <if test="null!=id and ''!=id">
+        and acct.`id` = #{id}
+      </if>
+      <if test="null!=loginName and ''!=loginName">
+        and acct.`loginName` LIKE CONCAT('%',#{loginName},'%')
+      </if>
+      <if test="null!=phoneNumber and ''!=phoneNumber">
+        and acct.`phoneNumber` LIKE CONCAT('%',#{phoneNumber},'%')
+      </if>
+      <if test="null!=kawyiName and ''!=kawyiName">
+        and acct.`kawyiName` LIKE CONCAT('%',#{kawyiName},'%')
+      </if>
+      <if test="null!=createBro and ''!=createBro">
+        and adetail.`createBro` LIKE CONCAT('%',#{createBro},'%')
+      </if>
+      <if test="null!=careateSystem and ''!=careateSystem">
+        and adetail.`careateSystem` LIKE CONCAT('%',#{careateSystem},'%')
+      </if>
+      <if test="null!=sex and ''!=sex">
+        and acct.`sex` = #{sex}
+      </if>
+      <if test="null!=createTime_s and ''!=createTime_s">
+        <![CDATA[
+              and acct.`createTime` >= #{createTime_s}
+          ]]>
+      </if>
+      <if test="null!=createTime_e and ''!=createTime_e">
+        <![CDATA[
+              and acct.`createTime` <= #{createTime_e}
+          ]]>
+      </if>
+    </where>
+    ORDER  BY acct.createTime DESC
+  </select>
+
+  <select id="selectByObj" parameterType="com.guinea.datadb.mysql.entity.SysAccount" resultMap="BaseResultMap" >
+    select id, sex, pwd, salt, locked, isDelete, loginName, createTime, email, phoneNumber,
+    createip, createcity, kawyiName,type
+    from sys_account
+    <where>
+      <if test="null!=id and ''!=id">
+        and `id` = #{id}
+      </if>
+      <if test="null!=loginName and ''!=loginName">
+        and `loginName` = #{loginName}
+      </if>
+      <if test="null!=phoneNumber and ''!=phoneNumber">
+        and `phoneNumber` = #{phoneNumber}
+      </if>
+      <if test="null!=kawyiName and ''!=kawyiName">
+        and `kawyiName` = LIKE CONCAT('%',#{kawyiName},'%')
+      </if>
+    </where>
+  </select>
+
+  <update id="updatePwdById" parameterType="com.guinea.datadb.mysql.entity.SysAccount" >
+    update sys_account set pwd = #{pwd,jdbcType=VARCHAR} where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

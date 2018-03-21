@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>股票</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="fundStock_list" title="股票配置" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/fund/fundStockList',
+              toolbar:'[id^=fundStockTab]',
+              rownumbers:true">
+    <thead>
+    <tr>
+        <th field="scode" width="120">代码</th>
+        <th field="sname" width="100">名称</th>
+        <th field="stypeName" width="100">类型</th>
+        <th field="spaceName" width="100">板块</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="fundStockTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" id="fundStockAdd">添加</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" id="fundStockEdit">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="fundStockRemove">删除</a>
+    <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mms',iconCls:'icon-export'" onclick="">导出</a>
+</div>
+<div id="fundStockTab_2">
+    代码 :<input id="code_s" type="text" name="scode"/>
+    名称 :<input id="name_s" type="text" name="sname"/>
+    类型:
+    <select id="stype_sid" panelHeight="auto" style="width:100px" name="stype_s">
+        <option value="">--请选择--</option>
+        <#list stockTypeMap?keys as k>
+                <option value="${k}">--${stockTypeMap[k]}--</option>
+        </#list>
+    </select>
+    板块:
+    <select id="space_sid" panelHeight="auto" style="width:100px" name="stype_s">
+        <option value="" selected="selected">--请选择--</option>
+        <#list stockPaceMap?keys as k>
+                <option value="${k}">--${stockPaceMap[k]}--</option>
+        </#list>
+    </select>
+
+    <span class="easyui-linkbutton" iconCls="icon-search" id="fundStock_list_search">查询 </span>
+</div>
+
+<div id="mms" style="width:150px;">
+    <div data-options="iconCls:'icon-excel03'">Excel03</div>
+    <div data-options="iconCls:'icon-excel10'">Excel10</div>
+    <div data-options="iconCls:'icon-pdf'">PDF</div>
+    <div data-options="iconCls:'icon-dbf'">DBF</div>
+</div>
+<script type="text/javascript">
+$(function(){
+    $("#fundStockAdd").click(function(){
+        openNav('${path}/fundStockAdd','添加股票配置');
+    });
+
+    $("#fundStockEdit").click(function(){
+        var row = $('#fundStock_list').datagrid('getSelected');
+        if(row){
+            openNav('${path}/fundStockEdit?id='+row.id,'编辑股票配置');
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#fundStockRemove").click(function(){
+        var row = $('#fundStock_list').datagrid('getSelected');
+        if(row){
+            $.messager.confirm('提示',"您确定要删除股票<font color='#8b0000'>"+row.scode+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/fund/fundStockDelete',{id:row.id},function(data){
+                        if (data.mta==1){
+                            $('#fundStock_list').datagrid('reload');
+                             $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                    },'json');
+                }
+            });
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#fundStock_list_search").click(function(){
+        var stype=$("#stype_sid").find("option:selected").val();
+        var space=$("#space_sid").find("option:selected").val();
+        var code_s = $("#code_s").val();
+        var name_s = $("#name_s").val();
+        $("#fundStock_list").datagrid('load',{
+            stype:stype,
+            scode:code_s,
+            space:space,
+            sname:name_s
+        })
+    });
+
+});
+</script>
+</body>
+</html>

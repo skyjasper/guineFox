@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <title>上传配置</title>
+</head>
+<body>
+<div class="easyui-panel" title="上传配置" style="width:94%;hight:80%">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_upload_config" class="easyui-form" action="${path}/uploadify/uploadConfig" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td>单个文件大小:</td>
+                    <td>
+                        <input data-options="required:true" type="text" name="fileMaxSize" id="fileMaxSize" value="${uploadConfig.fileMaxSize}"/>MB
+                        <input type="text" name="id" id="id" value="${uploadConfig.id}" style="display:none"/>
+                        <input type="text" name="version" id="version" value="${uploadConfig.version}" style="display:none"/>
+                        <input type="text" name="isReName" id="isReName" value="${uploadConfig.isReName}" style="display:none"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>单次上传文件大小:</td>
+                    <td><input data-options="required:true" type="text" name="allMaxSize" id="allMaxSize" value="${uploadConfig.allMaxSize}"/>MB</td>
+                </tr>
+                <tr>
+                    <td>缓存大小:</td>
+                    <td><input data-options="required:true" type="text" name="cacheSize" id="cacheSize" value="${uploadConfig.cacheSize}"/>MB</td>
+                </tr>
+                <tr>
+                    <td>文件保存路径:</td>
+                    <td><input data-options="required:true" type="text" maxlength="150" size="70" name="savePath" id="savePath" value="${uploadConfig.savePath}" /></td>
+                </tr>
+                <tr>
+                    <td>是否支持拖拽:</td>
+                    <td>
+                        <select class="easyui-combobox" name="isDragdrop" data-options="required:true">
+                            <#list booleanMap?keys as k>
+                                <#if k == "${uploadConfig.isDragdrop}">
+                                    <option value="${k}" selected="selected">--${booleanMap[k]}--</option>
+                                </#if>
+                                <#if k != "${uploadConfig.isDragdrop}">
+                                    <option value="${k}">--${booleanMap[k]}--</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>上传文件限制:</td>
+                    <td>
+                        <div id="dddsf" class="easyui-draggable easyui-resizable" data-options="handle:'#mytitle'" style="width:458px;height:150px;border:1px solid #ccc">
+                            <div id="mytitle" style="background:#ddd;padding:3px;">上传文件限制</div>
+                            <div style="padding:10px">
+                                <table>
+                                    <tr>
+                                        <td><font style="color:#075071;font-size:11px;font-weight:bold;">文档</font></td>
+                                        <td>
+                                            <input data-options="required:true" size="60" maxlength="150" type="text" name="documentExt" id="documentExt" value="${documentExt}"/>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><font style="color:#075071;font-size:11px;font-weight:bold;">图片</font></td>
+                                        <td>
+                                            <input data-options="required:true" size="60" maxlength="150" type="text" name="imageExt" id="imageExt" value="${imageExt}"/>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><font style="color:#075071;font-size:11px;font-weight:bold;">文件</font></td>
+                                        <td>
+                                            <input data-options="required:true" size="60" maxlength="150" type="text" name="fileExt" id="fileExt" value="${fileExt}"/>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="text-align:right;padding:10px;padding-bottom: 10px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-submit" style="width:90px" onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c4" iconCls="icon-otherclose" style="width:90px" onclick="closeCurr()">关闭</a>
+    </div>
+</div>
+<script>
+    function submitForm(){
+        $('#ff_upload_config').form('submit',{
+            onSubmit:function(){
+                return $(this).form('enableValidation').form('validate');
+            },
+            success : function(data) {
+                var obj_json = $.parseJSON(data);
+                if(obj_json.mta==1){
+                    $.messager.alert('提示',obj_json.msg,'info');
+                    var currTab = $('#tt').tabs('getSelected');
+                    var currIndex = currTab.panel('options').index;
+                    $('#tt').tabs('close',currIndex);
+                }else{
+                    $.messager.alert('提示',obj_json.msg,'error');
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

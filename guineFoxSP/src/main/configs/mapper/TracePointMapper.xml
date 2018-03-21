@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.TracePointMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.TracePoint" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="pName" property="pname" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="lgt" property="lgt" jdbcType="DECIMAL" />
+    <result column="lat" property="lat" jdbcType="DECIMAL" />
+    <result column="scope" property="scope" jdbcType="REAL" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from trace_point
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.TracePoint" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into trace_point (pName, address, lgt, 
+      lat, scope, uid)
+    values (#{pname,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{lgt,jdbcType=DECIMAL}, 
+      #{lat,jdbcType=DECIMAL}, #{scope,jdbcType=REAL}, #{uid,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.TracePoint" >
+    update trace_point
+    set pName = #{pname,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      lgt = #{lgt,jdbcType=DECIMAL},
+      lat = #{lat,jdbcType=DECIMAL},
+      scope = #{scope,jdbcType=REAL},
+      uid = #{uid,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, pName, address, lgt, lat, scope, uid
+    from trace_point
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, pName, address, lgt, lat, scope, uid
+    from trace_point
+  </select>
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select id, pName, address, lgt, lat, scope, uid
+    from trace_point
+    <where>
+      <if test="id !=null">
+        and `id` = #{id}
+      </if>
+      <if test="null!=pName and ''!=pName">
+        and `pName` LIKE CONCAT('%',#{pName},'%')
+      </if>
+      <if test="null!=address and ''!=address">
+        and `address` LIKE CONCAT('%',#{address},'%')
+      </if>
+      <if test="null!=uid and ''!=uid">
+        and `uid` = #{uid}
+      </if>
+    </where>
+  </select>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.UserRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.UserRole" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="u_id" property="uId" jdbcType="BIGINT" />
+    <result column="r_id" property="rId" jdbcType="BIGINT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from user_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByRoleId" parameterType="java.lang.Long" >
+    delete from user_role
+    where r_id = #{rId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByUserId" parameterType="java.lang.Long" >
+    delete from u_id
+    where u_id = #{uId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.UserRole" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into user_role (u_id, r_id)
+    values (#{uId,jdbcType=BIGINT}, #{rId,jdbcType=BIGINT})
+  </insert>
+  <insert id="bathInsert" parameterType="java.util.List" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into user_role (u_id, r_id)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >
+      (#{item.uId,jdbcType=BIGINT},#{item.rId,jdbcType=BIGINT})
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.UserRole" >
+    update user_role
+    set u_id = #{uId,jdbcType=BIGINT},
+      r_id = #{rId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, u_id, r_id
+    from user_role
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, u_id, r_id
+    from user_role
+  </select>
+  <select id="selectByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, u_id, r_id
+    from user_role WHERE r_id = #{rId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, u_id, r_id
+    from user_role WHERE u_id = #{uId,jdbcType=BIGINT}
+  </select>
+</mapper>

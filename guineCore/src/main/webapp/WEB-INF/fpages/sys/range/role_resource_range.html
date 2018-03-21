@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>角色资源授权</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon"/>
+</head>
+<body>
+<div style="margin:20px 0;">
+    <ul>
+        <li>
+            角色名：&nbsp; <font color="#9393FF">${sysRole.roleName!}</font>
+        </li>
+        <li>角色描述：&nbsp;<font color="#9393FF">${sysRole.description!}</font>
+            &nbsp;&nbsp;&nbsp;
+            <#if flagt =="rangev">
+                <a href="javascript:void(0)" class="easyui-linkbutton c2" style="width:40px"
+                   onclick="getChecked()">提交</a>
+            </#if>
+        </li>
+    </ul>
+</div>
+<div class="easyui-panel" style="padding:5px">
+    <ul id="easyTreeRoleResource" class="easyui-tree" data-options=
+            "url:'${path}/sys/range/role_resource_range?roleId=${sysRole.id}',
+                method:'post',
+                animate:true,
+                checkbox:true">
+    </ul>
+</div>
+<script type="text/javascript">
+    function getChecked(){
+        var nodes = $('#easyTreeRoleResource').tree('getChecked');
+        var s = '';
+        for(var i=0; i<nodes.length; i++){
+            if (s != '') s += ',';
+            s += nodes[i].id;
+        }
+        $.post('${path}/sys/range/role_resource_range_process',
+                {resIds:s, roleId:${sysRole.id}},
+                function(data){
+                    if (data.mta==1){
+                        $.messager.alert('提示',data.msg,'info');
+                        $('#sysRole_list').datagrid('reload');
+                        var currTab = $('#tt').tabs('getSelected');
+                        var currIndex = currTab.panel('options').index;
+                        $('#tt').tabs('close',currIndex);
+                    }else{
+                        $.messager.alert('提示',data.msg,'error');
+                    }
+        },'json');
+    }
+</script>
+</body>
+</html>

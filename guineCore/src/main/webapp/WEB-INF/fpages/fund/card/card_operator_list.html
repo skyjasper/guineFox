@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>运营商配置</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+</head>
+<body>
+<table class="easyui-datagrid" id="card_operator_list" title="运营商配置" iconCls="icon-data" style="display: none"
+       data-options=
+               "singleSelect:true,
+              pagination:true,
+              pageSize:'${pageSize}',
+              pageList:${pageList},
+              url:'${path}/fund/card/card_operator_list',
+              toolbar:'[id^=card_operatorTab]'">
+    <thead>
+    <tr>
+        <th field="id" width="120">代码</th>
+        <th field="name" width="100">名称</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="card_operatorTab_1">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" id="card_operator_add">添加</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" id="card_operator_edit">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="card_operator_remove">删除</a>
+</div>
+<div id="card_operatorTab_2">
+    代码 :<input id="id_s" type="text" name="id"/>
+    名称 :<input id="name_s" type="text" name="name"/>
+    <span class="easyui-linkbutton" iconCls="icon-search" id="card_operator_list_search">查询 </span>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    $("#card_operator_add").click(function(){
+        openNav('${path}/card_operator_add','添加运营商');
+    });
+
+    $("#card_operator_edit").click(function(){
+        var row = $('#card_operator_list').datagrid('getSelected');
+        if(row){
+            openNav('${path}/card_operator_edit?id='+row.id,'编辑运营商');
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#card_operator_remove").click(function(){
+        var row = $('#card_operator_list').datagrid('getSelected');
+        if(row){
+            $.messager.confirm('提示',"您确定要删除运营商<font color='#8b0000'>"+row.name+"</font>吗？",function(r){
+                if(r){
+                    $.post('${path}/fund/card/card_operator_delete',{id:row.id},function(data){
+                        if (data.mta==1){
+                            $('#card_operator_list').datagrid('reload');
+                             $.messager.alert('提示',data.msg,'info');
+                        }else{
+                            $.messager.alert('提示',data.msg,'error');
+                        }
+                    },'json');
+                }
+            });
+        }else{
+            $.messager.alert('提示','请选择一条记录!','warning');
+        }
+    });
+
+    $("#card_operator_list_search").click(function(){
+        var id_s = $("#id_s").val();
+        var name_s = $("#name_s").val();
+        $("#card_operator_list").datagrid('load',{
+            id:id_s,
+            name:name_s
+        })
+    });
+
+});
+</script>
+</body>
+</html>

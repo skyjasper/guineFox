@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<properties resource="power-resources.properties"/>
+	<!--MyBatis3,MyBatis3Simple(可以防止生成Excmple)，defaultModelType flat 该模型为每一张表只生成一个实体类。
+	这个实体类包含表中的所有字段;hierarchical:如果表有主键,那么该模型会产生一个单独的主键实体类,如果表还有BLOB字段，
+	 则会为表生成一个包含所有BLOB字段的单独的实体类,然后为所有其他的字段生成一个单独的实体类。
+	  MBG会在所有生成的实体类之间维护一个继承关系 -->
+	<context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+		<!--mysql 的关键字分隔符 -->
+		<property name="beginningDelimiter" value="`"/>
+		<property name="endingDelimiter" value="`"/>
+
+		<jdbcConnection driverClass="${mariaDB_driver_class}"
+			connectionURL="${mariaDB_jdbc_url}"
+			userId="${mariaDB_jdbc_user}" password="${mariaDB_jdbc_password}" />
+		<!-- 指定生成的类型为java类型，避免数据库中number等类型字段 -->
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<!-- 生成实体类 指定包名 以及生成的地址 （可以自定义地址，但是路径不存在不会自动创建 使用Maven生成在target目录下，会自动创建） 
+			生成model模型，对应的包，存放位置可以指定具体的路径,如/ProjectName/src，也可以使用MAVEN来自动生成
+			  mvn mybatis-generator:generate -e
+			 -->
+		<javaModelGenerator targetPackage="com.guinea.datadb.mysql.entity"
+			targetProject="src\main\java">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<!--对应的xml mapper文件 -->
+		<sqlMapGenerator targetPackage="mapper"
+			targetProject="src\main\configs">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<!-- 对应的dao接口 type="ANNOTATEDMAPPER",生成Java Model 和基于注解的Mapper对象 type="MIXEDMAPPER",生成基于注解的Java 
+			Model 和相应的Mapper对象 type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口
+			 mvn mybatis-generator:generate -e
+			 -->
+		<javaClientGenerator type="XMLMAPPER"
+			targetPackage="com.guinea.datadb.mysql.persistence" targetProject="src\main\java">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+
+		<table tableName="plan_task" domainObjectName="planTask">
+			<generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+		</table>
+
+		<!--
+		<table tableName="sys_resource" domainObjectName="SysResource">
+			<generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+		</table>
+		<table tableName="" domainObjectName="" />
+		<table tableName="%" >
+			<generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+		</table>
+		 -->
+	</context>
+</generatorConfiguration>

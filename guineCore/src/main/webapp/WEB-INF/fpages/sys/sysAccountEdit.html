@@ -1,0 +1,17 @@
+<form id="ff_sysAccountEdit" action="${path}/sysAccountEdit" method="post">
+    <table class="formTable">
+        <tr>
+            <td>昵称：</td>
+            <td>
+                <input type="hidden" name="id" value="${sysAccount.id}"/>
+                <input id="kawyiname" name="kawyiname" value="${sysAccount.kawyiname}" required="true" class="easyui-validatebox" data-options="width: 150"/>
+            </td>
+        </tr>
+        <tr>
+        <td>邮箱：</td>
+        <td>
+            <input id="email" name="email" class="easyui-validatebox"  validType="email" required="true" value="${sysAccount.email}" data-options="width: 150"/>
+        </td>
+        </tr>
+    </table>
+</form>

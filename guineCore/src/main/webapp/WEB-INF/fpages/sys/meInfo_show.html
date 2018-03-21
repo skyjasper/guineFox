@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息查看</title>
+</head>
+<body>
+    <div class="easyui-panel" title="个人信息查看" style="width:94%;hight:80%">
+        <div style="margin:20px 0;"></div>
+        <table class="easyui-propertygrid" id="meinfo_show" style="display: none"
+               data-options="
+              scrollbarSize: 0,
+              url:'${path}/sys/meInfo_show',
+              showGroup: true,
+              columns:  [[
+        {field:'name',title:'名称',width:80,sortable:true},
+        {field:'value',title:'内容',width:120,resizable:false}
+    ]]">
+        </table>
+    </div>
+</body>
+</html>

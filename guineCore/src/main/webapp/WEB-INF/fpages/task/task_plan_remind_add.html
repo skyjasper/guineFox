@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>创建任务</title>
+</head>
+<body>
+<div id="v_ff_task_plan_remind_add" class="easyui-panel" title="创建任务" style="width:94%;hight:80%">
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff_task_plan_remind_add" class="easyui-form"
+              action="${path}/task/task_plan_remind_add" method="post" data-options="novalidate:true">
+            <table cellpadding="5">
+                <tr>
+                    <td> &nbsp;&nbsp;执行类型:</td>
+                    <td>
+                        <select class="easyui-combobox" id="executeType_" style="width:298px" name="executeType">
+                            <#list executeTypeMap?keys as k>
+                                <#if k == "2">
+                                    <option value="${k}" selected="selected">${executeTypeMap[k]}</option>
+                                </#if>
+                                <#if k != "2">
+                                    <option value="${k}">${executeTypeMap[k]}</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;任务级别:</td>
+                    <td>
+                        <select class="easyui-combobox" id="level_" style="width:298px" name="level">
+                            <#list levelMap?keys as k>
+                                <#if k == "1">
+                                    <option value="${k}" selected="selected">${levelMap[k]}</option>
+                                </#if>
+                                <#if k != "1">
+                                    <option value="${k}">${levelMap[k]}</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><font color="red">*</font>任务时间:</td>
+                    <td>
+                        <input name="startTime" id="startTime_" required="true" class="easyui-datetimebox"
+                               style="width:298px"/><font color="#7b68ee">(若无定时则为定时时间，
+                         若为每月则为每月固定X日X时，某天则为固定X时)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td><font color="red">*</font>任务摘要:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="keyword" id="keyword_"
+                               maxlength="10" style="width:298px;" data-options="required:true,precision:6"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;任务内容:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="content" id="content_"
+                               maxlength="16"  style="width:298px;height:30px;" data-options="precision:6"/>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;&nbsp;详细描述:<font color="#b22222"></font></td>
+                    <td>
+                        <input class="easyui-textbox" name="discrible" style="width:298px;height:60px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td> &nbsp;&nbsp;失效时间:</td>
+                    <td>
+                        <input name="endTime" id="endTime_" class="easyui-datetimebox"
+                               style="width:298px"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="text-align:right;padding:10px;padding-bottom: 10px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-submit" style="width:90px"
+           onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c8" iconCls="icon-otherclose" style="width:90px"
+           onclick="clearForm()">清空</a>
+    </div>
+</div>
+<script>
+
+    /***
+     * 提交
+     */
+    function submitForm() {
+        $('#ff_task_plan_remind_add').form('submit', {
+            onSubmit: function () {
+                return $(this).form('enableValidation').form('validate');
+            },
+            success: function (data) {
+                var obj_json = $.parseJSON(data);
+                if (obj_json.mta == 1) {
+                    $.messager.alert('提示', obj_json.msg, 'info');
+                    var currTab = $('#tt').tabs('getSelected');
+                    var currIndex = currTab.panel('options').index;
+                    $('#task_plan_remind_list').datagrid('reload');
+                    $('#tt').tabs('close', currIndex);
+                } else {
+                    $.messager.alert('提示', obj_json.msg, 'error');
+                }
+            }
+        });
+    }
+
+    function clearForm() {
+        $('#ff_task_plan_remind_add').form('clear');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guinea.datadb.mysql.persistence.task.PlanTaskMapper" >
+  <resultMap id="BaseResultMap" type="com.guinea.datadb.mysql.entity.task.PlanTask" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="execute_type" property="executeType" jdbcType="SMALLINT" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="level" property="level" jdbcType="SMALLINT" />
+    <result column="keyword" property="keyword" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="discrible" property="discrible" jdbcType="VARCHAR" />
+    <result column="is_past" property="isPast" jdbcType="SMALLINT" />
+    <result column="is_finish" property="isFinish" jdbcType="SMALLINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from plan_task
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="batchDeleteByPrimaryKey" parameterType="java.util.List" >
+    delete from plan_task
+    where id in
+    <foreach collection="list" index="index" item="item" open=" (" separator="," close=")">
+      #{item,jdbcType=BIGINT}
+    </foreach>
+  </delete>
+
+  <insert id="insert" parameterType="com.guinea.datadb.mysql.entity.task.PlanTask" useGeneratedKeys="true">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into plan_task (execute_type, start_time, end_time, 
+      `level`, keyword, content,
+      discrible, is_past, is_finish, user_id
+      )
+    values (#{executeType,jdbcType=SMALLINT}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{level,jdbcType=SMALLINT}, #{keyword,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{discrible,jdbcType=VARCHAR}, #{isPast,jdbcType=SMALLINT}, #{isFinish,jdbcType=SMALLINT},
+      #{userId,jdbcType=BIGINT}
+      )
+  </insert>
+  <update id="finishByPrimaryKey" parameterType="java.util.List" >
+     update plan_task
+    set is_finish =1
+    where id in
+    <foreach collection="list" index="index" item="item" open=" (" separator="," close=")">
+      #{item,jdbcType=BIGINT}
+    </foreach>
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.guinea.datadb.mysql.entity.task.PlanTask" >
+    update plan_task
+    set execute_type = #{executeType,jdbcType=SMALLINT},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      `level` = #{level,jdbcType=SMALLINT},
+      keyword = #{keyword,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      discrible = #{discrible,jdbcType=VARCHAR},
+      is_past = #{isPast,jdbcType=SMALLINT},
+      is_finish = #{isFinish,jdbcType=SMALLINT}
+      user_id   = #{userId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!-- 更新状态为过时,完成状态为挂起-->
+  <update id="batchUpdateAlreadyPast" parameterType="java.util.List">
+    update plan_task
+    set  is_past = 1,
+    is_finish = 2
+    where id in
+      <foreach collection="list" index="index" item="item" open=" (" separator="," close=")">
+         #{item}
+     </foreach>
+  </update>
+
+  <!-- 更新状态为挂起,完成状态为挂起-->
+  <update id="batchUpdateGuaqiPast" parameterType="java.util.List">
+    update plan_task
+    set  is_past = 2,
+    is_finish = 2
+    where id in
+    <foreach collection="list" index="index" item="item" open=" (" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, execute_type, start_time, end_time, `level`, keyword, content, discrible,
+    is_past, is_finish,user_id
+    from plan_task
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, execute_type, start_time, end_time, `level`, keyword, content, discrible,
+    is_past, is_finish,user_id
+    from plan_task
+  </select>
+
+  <select id="selectByTask" resultMap="BaseResultMap"  parameterType="java.util.Map">
+    select id, execute_type, start_time, end_time, `level`, keyword, content, discrible,
+    is_past, is_finish,user_id
+    from plan_task t
+    <where>
+      <if test="null!=nowtime and ''!=nowtime">
+        <![CDATA[
+                and t.`start_time` >= #{nowtime}
+            ]]>
+      </if>
+      <if test="null!=execute_type and ''!=execute_type">
+        and t.`execute_type` = #{execute_type}
+      </if>
+      <if test="null!=is_finish and ''!=is_finish">
+        and t.`is_finish` = #{is_finish}
+      </if>
+      <if test="null!=is_past and ''!=is_past">
+        and t.`is_past` = #{is_past}
+      </if>
+      <if test="null!=user_id and ''!=user_id">
+        and t.`user_id` = #{user_id}
+      </if>
+      <if test="null!=execute_typet">
+         and t.`execute_type` in
+        <foreach collection="execute_typet" index="index" item="item" open=" (" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="findByPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select id, execute_type, start_time, end_time, `level`, keyword, content, discrible,
+    is_past, is_finish,user_id from plan_task t
+    <where>
+      <if test="null!=id and ''!=id">
+        and t.`id` = #{id}
+      </if>
+      <if test="null!=sttime and ''!=sttime">
+        <![CDATA[
+              and t.`start_time` >= #{sttime}
+          ]]>
+      </if>
+      <if test="null!=ettime and ''!=ettime">
+        <![CDATA[
+              and t.`start_time` <= #{ettime}
+          ]]>
+      </if>
+      <if test="null!=level and ''!=level">
+        and t.`level` = #{level}
+      </if>
+      <if test="null!=keyword and ''!=keyword">
+        and t.`keyword` LIKE CONCAT('%',#{keyword},'%')
+      </if>
+      <if test="null!=user_id and ''!=user_id">
+        and t.`user_id` = #{user_id}
+      </if>
+    </where>
+    order by t.start_time desc
+  </select>
+</mapper>

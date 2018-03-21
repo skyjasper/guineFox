@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>注册</title>
+<link rel="shortcut icon" href="${path}/gui/themes/icons/logo_mini.ico" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="${path}/gui/themes/metro/easyui.css">
+<link rel="stylesheet" type="text/css" href="${path}/gui/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="${path}/gui/themes/color.css">
+<link rel="stylesheet" type="text/css" href="${path}/gui/themes/jasper.css">
+<script type="text/javascript" src="${path}/gui/js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="${path}/gui/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${path}/gui/local/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="http://pv.sohu.com/cityjson?ie=utf-8" charset="utf-8"></script>
+<script type="text/javascript" src="${path}/gui/login/register.js"></script>
+<script type="text/javascript" src="${path}/gui/js/verification/final-verification.js"></script>
+</head>
+<body>
+ <div class="easyui-panel" title="注册" iconCls="icon-logo_mini" style="height:535px;width:100%">
+        <div style="padding:10px 60px 20px 60px">
+        <form id="ff" class="easyui-form" method="post">
+            <table cellpadding="5">
+                <tr>
+                    <td>昵称:</td>
+                    <td><input id="kwy_name_" size="60" maxlength="60" type="text" name="kwy_name"/>
+                        <span class="login_name_s"></span></td>
+                </tr>
+                <tr>
+                    <td>登录名:</td>
+                    <td><input id="login_name_" size="60" maxlength="60" type="text" name="login_name"/></td>
+                </tr>
+                <tr>
+                    <td>手机号码:</td>
+                    <td><input id="phoneNumber_"  size="60" maxlength="60" type="text" name="phoneNumber"/>
+                        <span class="phoneNumber_s"></span></td>
+                </tr>
+                <tr>
+                    <td>密码:</td>
+                    <td>
+                     <input id="pwd_" size="60" maxlength="60" type="password" name="pwd" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>重复密码:</td>
+                    <td>
+                     <input size="60" maxlength="60" type="password" name="pwd1" id="pwd1_"/>
+                        <span class="pwd_s"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td><input size="60" maxlength="60" type="text" id="email_" name="email"/>
+                        <span class="email_s"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>性别:</td>
+                    <td>
+                    <select id="sex_" name="sex">
+                        <#list sexEnumMap?keys as k>
+                                <#if k == "-1">
+                                      <option value="${k}" selected="selected">--${sexEnumMap[k]}--</option>
+                                </#if>
+                                <#if k != "-1">
+                                     <option value="${k}">--${sexEnumMap[k]}--</option>
+                                </#if>
+                          </#list>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                 </tr>
+                 
+                <tr>
+                  <td>
+                   		信息
+                  </td>
+                  <td>
+					 <div id="dddsf" class="easyui-draggable easyui-resizable" data-options="handle:'#mytitle'" style="width:1000px;height:200px;border:1px solid #ccc">
+						        <div id="mytitle" style="background:#ddd;padding:3px;">信息</div>
+						        <div style="padding:10px">
+						          <table>
+                                      <tr>
+                                          <td><font style="color:#075071;font-size:11px;font-weight:bold;">当前IP</font></td>
+                                          <td>
+                                              <font style="color:cornflowerblue;font-size:11px;font-weight:bold;"> <span id="currIP"></span></font>
+                                          </td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                      </tr>
+                                      <tr>
+                                          <td><font style="color:#075071;font-size:11px;font-weight:bold;">IP所在城市</font></td>
+                                          <td>
+                                              <font style="color:cornflowerblue;font-size:11px;font-weight:bold;"><span id="currCity"></span></font>
+                                              <input type="text" name="systemOS" class="systemOS"  value="${systemOS}" style="display:none"/>
+                                              <input type="text" name="browserName" class="browserName" value="${browserName}" style="display:none"/>
+                                              <input type="text" name="browserVersion" class="browserVersion" value="${browserVersion}" style="display:none"/>
+                                          </td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                      </tr>
+                                      <tr>
+                                          <td><font style="color:#126499;font-size:14px;font-weight:bold;">浏览器信息：</font></td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                      </tr>
+                                      <tr>
+                                          <#list browerMap?keys as k>
+                                              <td><font style="color:#075071;font-size:12px;font-weight:bold;">${k}</font>:</td>
+                                              <td><font style="color:cornflowerblue;font-size:11px;font-weight:bold;">${browerMap[k]}</font></td>
+                                              <td>
+                                                 <font style="color:#075071;font-size:10px;font-weight:bold;">||</font>
+                                              </td>
+                                          </#list>
+                                      </tr>
+                                      <tr>
+                                          <td><font style="color:#126499;font-size:14px;font-weight:bold;">操作系统信息：</font></td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                      </tr>
+                                      <tr>
+                                          <#list systemMap?keys as k>
+                                              <td><font style="color:#075071;font-size:12px;font-weight:bold;">${k}</font>:</td>
+                                              <td><font style="color:cornflowerblue;font-size:11px;font-weight:bold;">${systemMap[k]}</font></td>
+                                              <td>
+                                                <font style="color:#075071;font-size:10px;font-weight:bold;">||</font>
+                                              </td>
+                                          </#list>
+                                          <td></td>
+                                      </tr>
+						          </table>
+						        </div>
+					    </div>
+                  </td>
+                </tr>
+              </table>
+        </form>
+	        
+        </div>
+    </div>
+        <div style="text-align:right;padding:5px;">
+                    <a href="javascript:void(0)" class="easyui-linkbutton c6" onclick="submitForm()">提交</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton c6" onclick="clearForm()">清空</a>
+        </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+*{
+	font-size:12px;
+}
+body {
+    font-family:verdana,helvetica,arial,sans-serif;
+    padding:20px;
+    font-size:12px;
+    margin:0;
+}
+h2 {
+    font-size:18px;
+    font-weight:bold;
+    margin:0;
+    margin-bottom:15px;
+}
+.demo-info{
+	padding:0 0 12px 0;
+}
+.demo-tip{
+	display:none;
+}
+
+.e-link{
+	text-decoration: none;
+	color:#126499;
+}
+
+.icon-logo_mini{
+  background:url('icons/logo_mini.ico') no-repeat;
+}
+.icon-base{
+  background:url('icons/basic.png') no-repeat;
+}
+.icon-gears{
+  background:url('icons/gears.png') no-repeat;
+}
+.icon-bat{
+  background:url('icons/bat.ico') no-repeat;
+}
+
+.skyjasper {
+  height: 38px;
+  background-repeat: no-repeat;
+  background-position: 100% -50px;
+  background:url('icons/logoDruck.ico') no-repeat;
+}
+
+.jasperlogo {
+    background: url('icons/logo_mini.ico') no-repeat;
+}
+
+.wireless {
+    background: url('icons/wireless.png') no-repeat;
+}
